@@ -3,1158 +3,801 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>LOHAN IA v4</title>
-<link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&family=Share+Tech+Mono&family=Exo+2:wght@200;300;400;600&display=swap" rel="stylesheet">
+<title>LOHAN OS - Sistema Operacional Pessoal</title>
+<link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&family=Share+Tech+Mono&family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet">
 <style>
-/* ═══════════════════════════════════════════════════════
-   RESET + TOKENS
-   ═══════════════════════════════════════════════════════ */
-*,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
 :root{
-  --bg:#0b0f1a;
-  --panel:#111827;
-  --panel2:#141c2e;
-  --border:rgba(74,222,128,0.1);
-  --border2:rgba(74,222,128,0.18);
-  --green:#4ade80;
-  --green2:#22c55e;
-  --yellow:#facc15;
-  --orange:#fb923c;
-  --red:#f87171;
-  --blue:#60a5fa;
-  --cyan:#22d3ee;
-  --text:#d1fae5;
-  --text2:#f0fdf4;
-  --muted:#4b5563;
-  --muted2:#374151;
+--bg:#050a0f;
+--bg2:#0a1520;
+--panel:#0d1e2e;
+--panel2:#112233;
+--border:rgba(0,200,255,0.15);
+--border2:rgba(0,200,255,0.3);
+--cyan:#00c8ff;
+--cyan2:#00e5ff;
+--green:#00ff88;
+--yellow:#ffcc00;
+--orange:#ff8800;
+--red:#ff4444;
+--purple:#aa66ff;
+--text:#c8e8ff;
+--text2:#e8f4ff;
+--muted:#4a7a99;
+--muted2:#2a4a66;
 }
-html,body{height:100%;background:var(--bg);color:var(--text);font-family:'Exo 2',sans-serif;font-size:14px;overflow:hidden;}
-
-/* grid bg */
-body::before{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;
-  background-image:linear-gradient(rgba(74,222,128,0.022) 1px,transparent 1px),
-                   linear-gradient(90deg,rgba(74,222,128,0.022) 1px,transparent 1px);
-  background-size:36px 36px;}
-body::after{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;
-  background:radial-gradient(ellipse 80% 60% at 50% 0%,rgba(74,222,128,0.03) 0%,transparent 60%);}
-
-/* ═══════════════════════════════════════════════════════
-   LAYOUT — two full-page views stacked
-   ═══════════════════════════════════════════════════════ */
-.view{position:fixed;inset:0;z-index:1;transition:opacity .5s ease, transform .5s ease;}
-.view.hidden{opacity:0;pointer-events:none;transform:scale(.98);}
-
-/* ═══════════════════════════════════════════════════════
-   ── VIEW A: CHAT ──
-   ═══════════════════════════════════════════════════════ */
-#chat-view{display:flex;flex-direction:column;height:100vh;max-width:960px;margin:0 auto;}
-
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
+body{background:var(--bg);color:var(--text);font-family:'Rajdhani',sans-serif;font-size:15px;overflow:hidden;height:100vh;width:100vw;}
+/* GRID BG */
+body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellipse 80% 50% at 50% -10%,rgba(0,200,255,0.08),transparent),linear-gradient(0deg,transparent calc(100% - 1px),rgba(0,200,255,0.04) 100%),linear-gradient(90deg,transparent calc(100% - 1px),rgba(0,200,255,0.04) 100%);background-size:100% 100%,40px 40px,40px 40px;pointer-events:none;z-index:0;}
+/* SCANLINES */
+body::after{content:'';position:fixed;inset:0;background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,0.08) 2px,rgba(0,0,0,0.08) 4px);pointer-events:none;z-index:0;}
+/* LAYOUT */
+#app{position:relative;z-index:1;display:grid;grid-template-rows:60px 1fr;height:100vh;}
 /* HEADER */
-.hdr{flex-shrink:0;display:flex;align-items:center;justify-content:space-between;
-  padding:0 24px;height:56px;
-  border-bottom:1px solid var(--border2);
-  background:rgba(11,15,26,.97);backdrop-filter:blur(16px);}
-.hdr-l{display:flex;align-items:center;gap:12px;}
-.logo-box{width:32px;height:32px;border:1.5px solid var(--green);border-radius:8px;
-  display:flex;align-items:center;justify-content:center;
-  box-shadow:0 0 14px rgba(74,222,128,0.2);}
-.logo-box svg{width:15px;height:15px;fill:none;stroke:var(--green);stroke-width:2;stroke-linecap:round;stroke-linejoin:round;}
-.logo-name{font-family:'Rajdhani',sans-serif;font-weight:700;font-size:19px;letter-spacing:2px;color:var(--text2);}
-.logo-tag{font-size:10px;color:var(--muted);font-family:'Share Tech Mono',monospace;letter-spacing:1px;}
-.hdr-r{display:flex;align-items:center;gap:14px;font-family:'Share Tech Mono',monospace;font-size:10px;color:var(--muted);}
-.live-dot{width:5px;height:5px;border-radius:50%;background:var(--green);box-shadow:0 0 6px var(--green);animation:blink 2s ease-in-out infinite;flex-shrink:0;}
-.web-dot{width:5px;height:5px;border-radius:50%;background:var(--cyan);box-shadow:0 0 6px var(--cyan);flex-shrink:0;}
-@keyframes blink{0%,100%{opacity:1}50%{opacity:0.3}}
-.badge-live{display:flex;align-items:center;gap:5px;color:var(--green);}
-.badge-web{display:flex;align-items:center;gap:5px;color:var(--cyan);}
-
-/* SCOREBAR */
-.scorebar{flex-shrink:0;display:flex;border-bottom:1px solid var(--border);background:rgba(14,18,32,.95);}
-.sc-item{flex:1;padding:9px 16px;border-right:1px solid var(--border);}
-.sc-item:last-child{border-right:none;}
-.sc-label{font-family:'Share Tech Mono',monospace;font-size:9px;color:var(--muted);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:4px;}
-.sc-val{font-family:'Rajdhani',sans-serif;font-size:17px;font-weight:700;line-height:1;}
-.sc-bar{height:2px;border-radius:2px;margin-top:5px;background:var(--muted2);}
-.sc-fill{height:100%;border-radius:2px;}
-
-/* CHAT SCROLL */
-.chat{flex:1;overflow-y:auto;padding:24px 24px 12px;display:flex;flex-direction:column;gap:20px;
-  scrollbar-width:thin;scrollbar-color:var(--muted2) transparent;}
-.chat::-webkit-scrollbar{width:3px;}
-.chat::-webkit-scrollbar-thumb{background:var(--muted2);border-radius:2px;}
-
-/* WELCOME */
-.welcome{animation:rise .5s ease;}
-.welcome-title{font-family:'Rajdhani',sans-serif;font-size:25px;font-weight:700;color:var(--text2);letter-spacing:1px;margin-bottom:6px;}
-.welcome-title span{color:var(--green);}
-.welcome-sub{font-size:13px;color:var(--muted);line-height:1.7;max-width:560px;margin-bottom:14px;}
-.web-notice{display:inline-flex;align-items:center;gap:8px;
-  background:rgba(34,211,238,0.06);border:1px solid rgba(34,211,238,0.2);
-  border-radius:6px;padding:7px 12px;margin-bottom:18px;
-  font-size:11px;color:var(--cyan);font-family:'Share Tech Mono',monospace;}
-.pills{display:flex;flex-wrap:wrap;gap:8px;}
-.pill{display:flex;align-items:center;gap:7px;background:var(--panel);border:1px solid var(--border2);
-  border-radius:6px;padding:8px 13px;cursor:pointer;font-size:12px;color:var(--text);
-  font-family:'Exo 2',sans-serif;transition:all .18s;text-align:left;}
-.pill:hover{background:var(--panel2);border-color:rgba(74,222,128,0.4);color:var(--green);
-  transform:translateY(-1px);box-shadow:0 4px 14px rgba(0,0,0,0.3);}
-.pdot{width:6px;height:6px;border-radius:50%;flex-shrink:0;}
-@keyframes rise{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
-
-/* MESSAGES */
-.msg{display:flex;gap:12px;animation:rise .22s ease;}
-.msg.user{flex-direction:row-reverse;}
-.av{width:32px;height:32px;border-radius:8px;display:flex;align-items:center;justify-content:center;
-  font-family:'Share Tech Mono',monospace;font-size:9px;font-weight:600;flex-shrink:0;margin-top:2px;}
-.msg.ai .av{background:rgba(74,222,128,0.1);border:1px solid rgba(74,222,128,0.25);color:var(--green);}
-.msg.user .av{background:var(--panel2);border:1px solid var(--border2);color:var(--muted);}
-.msg-body{flex:1;max-width:700px;}
-.msg.user .msg-body{display:flex;justify-content:flex-end;}
-.bubble{padding:13px 17px;border-radius:10px;font-size:14px;line-height:1.78;}
-.msg.ai .bubble{background:var(--panel);border:1px solid var(--border2);color:var(--text);border-radius:3px 10px 10px 10px;}
-.msg.user .bubble{background:var(--panel2);border:1px solid rgba(74,222,128,0.2);color:var(--text2);border-radius:10px 3px 10px 10px;max-width:500px;}
-.bubble strong{color:var(--text2);font-weight:600;}
-.bubble code{font-family:'Share Tech Mono',monospace;font-size:12px;background:rgba(74,222,128,0.07);
-  border:1px solid rgba(74,222,128,0.15);border-radius:3px;padding:1px 5px;color:#6ee7b7;}
-
-/* SEARCHING */
-.searching-bar{display:flex;align-items:center;gap:10px;padding:8px 12px;
-  background:rgba(34,211,238,0.05);border:1px solid rgba(34,211,238,0.15);
-  border-radius:6px;font-family:'Share Tech Mono',monospace;font-size:11px;color:var(--cyan);
-  animation:searchPulse 1.5s ease-in-out infinite;}
-.searching-bar svg{width:12px;height:12px;fill:none;stroke:var(--cyan);stroke-width:2;animation:spin 1s linear infinite;flex-shrink:0;}
-@keyframes spin{to{transform:rotate(360deg)}}
-@keyframes searchPulse{0%,100%{opacity:0.7}50%{opacity:1}}
-
-/* POST-PILLS */
-.post-pills{margin-top:10px;display:flex;flex-wrap:wrap;gap:6px;padding-left:44px;}
-.ppill{background:rgba(74,222,128,0.05);border:1px solid rgba(74,222,128,0.15);
-  border-radius:20px;padding:5px 12px;font-size:11px;color:#6ee7b7;cursor:pointer;
-  font-family:'Exo 2',sans-serif;transition:all .15s;}
-.ppill:hover{background:rgba(74,222,128,0.12);border-color:rgba(74,222,128,0.35);color:var(--green);}
-
-/* INPUT BAR */
-.inputbar{flex-shrink:0;padding:14px 24px 20px;border-top:1px solid var(--border2);background:rgba(11,15,26,.98);}
-.inp-shell{display:flex;gap:10px;align-items:flex-end;background:var(--panel);
-  border:1px solid var(--border2);border-radius:10px;padding:10px 14px;transition:border-color .2s,box-shadow .2s;}
-.inp-shell:focus-within{border-color:rgba(74,222,128,0.4);box-shadow:0 0 0 3px rgba(74,222,128,0.06);}
-textarea#inp{flex:1;background:transparent;border:none;outline:none;font-family:'Exo 2',sans-serif;
-  font-size:14px;color:var(--text2);resize:none;min-height:22px;max-height:110px;line-height:1.55;
-  padding:3px 0;caret-color:var(--green);}
-textarea#inp::placeholder{color:var(--muted);}
-.sbtn{flex-shrink:0;background:var(--green2);border:none;border-radius:7px;width:36px;height:36px;
-  cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .18s;
-  box-shadow:0 0 12px rgba(74,222,128,0.25);}
-.sbtn:hover{background:var(--green);box-shadow:0 0 20px rgba(74,222,128,0.4);transform:scale(1.04);}
-.sbtn svg{width:15px;height:15px;fill:#0b0f1a;}
-.mic-btn{flex-shrink:0;width:36px;height:36px;border-radius:7px;
-  border:1.5px solid rgba(74,222,128,0.3);background:rgba(74,222,128,0.05);
-  cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .18s;}
-.mic-btn:hover{border-color:rgba(74,222,128,0.6);background:rgba(74,222,128,0.1);}
-.mic-btn svg{width:15px;height:15px;fill:none;stroke:var(--green);stroke-width:2;stroke-linecap:round;}
-.mic-btn.recording{border-color:rgba(248,113,113,0.8);background:rgba(248,113,113,0.12);animation:micPulse 1s ease-in-out infinite;}
-.mic-btn.recording svg{stroke:var(--red);}
-@keyframes micPulse{0%,100%{box-shadow:0 0 0 0 rgba(248,113,113,0.3)}50%{box-shadow:0 0 0 6px rgba(248,113,113,0)}}
-.inp-foot{margin-top:7px;display:flex;justify-content:space-between;font-size:10px;
-  color:var(--muted);font-family:'Share Tech Mono',monospace;}
-.inp-foot .weba{color:var(--cyan);}
-.inp-foot .voicesta{color:var(--green);}
-
-/* HEADER BUTTONS */
-.hdr-btn{background:none;border:1px solid var(--border2);border-radius:6px;padding:4px 10px;
-  font-family:'Share Tech Mono',monospace;font-size:9px;color:var(--muted);cursor:pointer;
-  letter-spacing:1px;transition:all .15s;display:flex;align-items:center;gap:5px;}
-.hdr-btn:hover{border-color:rgba(74,222,128,0.4);color:var(--green);}
-.hdr-btn.warn{border-color:rgba(250,204,21,0.4);color:var(--yellow);}
-.hdr-btn.active{border-color:rgba(74,222,128,0.5);color:var(--green);background:rgba(74,222,128,0.06);}
-
-/* ═══════════════════════════════════════════════════════
-   ── VIEW B: APRESENTAÇÃO ──
-   ═══════════════════════════════════════════════════════ */
-#pres-view{display:flex;flex-direction:column;align-items:center;justify-content:center;
-  padding:32px 20px;gap:0;}
-
-/* ORB STAGE */
-.orb-stage{position:relative;width:160px;height:160px;
-  display:flex;align-items:center;justify-content:center;
-  flex-shrink:0;margin-bottom:24px;overflow:hidden;}
-
-/* rings — CSS state classes on body drive everything */
-.oring{position:absolute;border-radius:50%;border:1px solid transparent;opacity:0;
-  transition:border-color .5s,opacity .5s;}
-.or1{width:160px;height:160px;}
-.or2{width:124px;height:124px;}
-.or3{width:96px;height:96px;}
-
-/* THE ORB */
-#orb{width:72px;height:72px;border-radius:50%;position:relative;z-index:2;cursor:pointer;
-  background:radial-gradient(circle at 38% 33%,#1e293b,#06090f 70%);
-  border:1.5px solid #1e293b;box-shadow:none;
-  transition:background .45s,box-shadow .45s,border-color .45s,transform .12s;
-  display:flex;align-items:center;justify-content:center;
-  --lvl:0;}
-#orb::before{content:'';position:absolute;top:13%;left:19%;width:27%;height:16%;
-  border-radius:50%;background:rgba(255,255,255,.09);filter:blur(3px);pointer-events:none;}
-#orb:hover{transform:scale(1.06);}
-#orb:active{transform:scale(.95);}
-.orb-l{font-family:'Rajdhani',sans-serif;font-weight:700;font-size:24px;letter-spacing:2px;
-  transition:color .45s,text-shadow .45s;color:#1e293b;z-index:1;}
-
-/* scan line in stage */
-.scan-line{position:absolute;bottom:0;left:-100%;width:100%;height:1px;
-  background:linear-gradient(90deg,transparent,rgba(56,189,248,0.6),transparent);
-  animation:scanAnim 3.5s ease-in-out infinite;}
-@keyframes scanAnim{0%{left:-100%}100%{left:100%}}
-
-/* ── ORB STATES — class on body.s-* ── */
-body.s-idle #orb{background:radial-gradient(circle at 38% 33%,#1e293b,#06090f 70%);border-color:#1e293b;box-shadow:none;}
-body.s-idle .orb-l{color:#334155;text-shadow:none;}
-
-body.s-listening #orb{background:radial-gradient(circle at 38% 33%,#22c55ecc,#14532d22 62%,transparent);
-  border-color:rgba(34,197,94,.5);box-shadow:0 0 36px rgba(34,197,94,.4),0 0 72px rgba(34,197,94,.1);}
-body.s-listening .orb-l{color:#22c55e;text-shadow:0 0 14px #22c55e;}
-body.s-listening .or1{border-color:rgba(34,197,94,.22);opacity:1;animation:rPulse 2.4s ease-in-out infinite;}
-body.s-listening .or2{border-color:rgba(34,197,94,.14);opacity:1;animation:rPulse 2.4s ease-in-out infinite .4s;}
-
-body.s-processing #orb{background:radial-gradient(circle at 38% 33%,#facc15cc,#71350022 62%,transparent);
-  border-color:rgba(250,204,21,.5);box-shadow:0 0 36px rgba(250,204,21,.4),0 0 72px rgba(250,204,21,.1);}
-body.s-processing .orb-l{color:#facc15;text-shadow:0 0 14px #facc15;}
-body.s-processing .or1{border-color:rgba(250,204,21,.26);opacity:1;animation:rSpin 2s linear infinite;}
-body.s-processing .or2{border-color:rgba(250,204,21,.16);opacity:1;animation:rSpin 3s linear infinite reverse;}
-body.s-processing .or3{border-color:rgba(250,204,21,.09);opacity:1;animation:rPulse 1.3s ease-in-out infinite;}
-
-body.s-speaking #orb{background:radial-gradient(circle at 38% 33%,#38bdf8cc,#0c4a6e22 62%,transparent);
-  border-color:rgba(56,189,248,.55);box-shadow:0 0 50px rgba(56,189,248,.45),0 0 100px rgba(56,189,248,.12);
-  transform:scale(calc(1 + var(--lvl)*.22));}
-body.s-speaking .orb-l{color:#38bdf8;text-shadow:0 0 16px #38bdf8;}
-body.s-speaking .or1{border-color:rgba(56,189,248,.26);opacity:1;animation:rPulse 1.1s ease-in-out infinite;}
-body.s-speaking .or2{border-color:rgba(56,189,248,.16);opacity:1;animation:rPulse 1.1s ease-in-out infinite .2s;}
-body.s-speaking .or3{border-color:rgba(56,189,248,.09);opacity:1;animation:rPulse 1.1s ease-in-out infinite .4s;}
-
-body.s-presenting #orb{background:radial-gradient(circle at 38% 33%,#38bdf8cc,#0c4a6e22 62%,transparent);
-  border-color:rgba(56,189,248,.55);box-shadow:0 0 50px rgba(56,189,248,.45),0 0 100px rgba(56,189,248,.12);}
-body.s-presenting .orb-l{color:#38bdf8;text-shadow:0 0 16px #38bdf8;}
-body.s-presenting .or1{border-color:rgba(56,189,248,.22);opacity:1;animation:rPulse 2.8s ease-in-out infinite;}
-body.s-presenting .or2{border-color:rgba(56,189,248,.14);opacity:1;animation:rPulse 2.8s ease-in-out infinite .5s;}
-
-@keyframes rPulse{0%,100%{transform:scale(1);opacity:.3}50%{transform:scale(1.08);opacity:.07}}
-@keyframes rSpin{to{transform:rotate(360deg)}}
-
-/* PIP ROW */
-.pip-row{display:flex;align-items:center;gap:7px;margin-bottom:16px;}
-.pip{width:6px;height:6px;border-radius:50%;background:var(--green2);
-  box-shadow:0 0 6px var(--green2);animation:blink 2.5s ease-in-out infinite;}
-.pip-lbl{font-family:'Share Tech Mono',monospace;font-size:10px;color:var(--green2);letter-spacing:2px;}
-
-/* PRESENTATION TEXT */
-.pres-text{width:100%;max-width:760px;text-align:center;}
-#typing-line{font-size:clamp(14px,1.9vw,19px);font-weight:300;color:var(--text);
-  line-height:1.9;min-height:2.4em;letter-spacing:.02em;font-family:'Exo 2',sans-serif;}
-#typing-line .hi{color:var(--text2);font-weight:400;}
-#typing-line .num{color:#38bdf8;font-family:'Share Tech Mono',monospace;font-size:.9em;}
-#typing-line .warn{color:var(--yellow);}
-.tcur{display:inline-block;width:2px;height:1.1em;background:#38bdf8;
-  margin-left:3px;vertical-align:text-bottom;animation:curBlink .7s step-end infinite;}
-@keyframes curBlink{0%,100%{opacity:1}50%{opacity:0}}
-
-/* PROG ROW */
-.prog-row{margin-top:18px;display:flex;align-items:center;gap:10px;opacity:0;transition:opacity .5s;}
-.prog-row.vis{opacity:1;}
-.prog-lbl{font-family:'Share Tech Mono',monospace;font-size:9px;color:var(--muted);letter-spacing:2px;}
-.prog-bar{flex:1;max-width:200px;height:1px;background:rgba(56,189,248,.12);border-radius:1px;overflow:hidden;}
-.prog-fill{height:100%;background:#38bdf8;width:0%;transition:width .4s ease;box-shadow:0 0 6px #38bdf8;}
-
-/* PRES CONTROLS BAR */
-.pres-controls{position:fixed;bottom:0;left:0;right:0;
-  display:flex;align-items:center;justify-content:center;gap:16px;
-  padding:12px 24px;border-top:1px solid var(--border);
-  background:rgba(11,15,26,.98);font-family:'Share Tech Mono',monospace;font-size:9px;}
-.pres-ctrl-btn{background:none;border:1px solid var(--border2);border-radius:6px;
-  padding:5px 14px;color:var(--muted);cursor:pointer;letter-spacing:1.5px;transition:all .2s;}
-.pres-ctrl-btn:hover{border-color:rgba(56,189,248,.4);color:#38bdf8;}
-.pres-ctrl-btn.active{border-color:rgba(74,222,128,.4);color:var(--green);}
-#pres-clock{color:var(--text);}
-.pres-meta{color:var(--muted);}
-
-/* ═══════════════════════════════════════════════════════
-   AUDIO BARS (both views use them)
-   ═══════════════════════════════════════════════════════ */
-.bars{display:flex;align-items:center;gap:3px;height:20px;margin-top:12px;
-  opacity:0;transition:opacity .35s;}
-.bars.vis{opacity:1;}
-.bar{width:3px;min-height:3px;border-radius:2px;transition:height .07s ease;}
-body.s-listening  .bar{background:#22c55e;}
-body.s-speaking   .bar,.bars.spk .bar{background:#38bdf8;}
-body.s-processing .bar{background:#facc15;}
-
-/* ═══════════════════════════════════════════════════════
-   VOICE TOAST
-   ═══════════════════════════════════════════════════════ */
-.voice-toast{position:fixed;bottom:80px;left:50%;transform:translateX(-50%) translateY(8px);
-  background:var(--panel);border:1px solid var(--border2);border-radius:8px;
-  padding:8px 16px;font-family:'Share Tech Mono',monospace;font-size:11px;color:var(--cyan);
-  letter-spacing:1px;opacity:0;pointer-events:none;transition:all .25s;z-index:999;white-space:nowrap;}
-.voice-toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
-.voice-toast.speaking{color:var(--green);border-color:rgba(74,222,128,.3);}
-.voice-toast.error{color:var(--red);border-color:rgba(248,113,113,.3);}
-
-/* ═══════════════════════════════════════════════════════
-   CONFIG MODAL
-   ═══════════════════════════════════════════════════════ */
-.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.7);backdrop-filter:blur(4px);
-  z-index:500;display:flex;align-items:center;justify-content:center;opacity:0;
-  pointer-events:none;transition:opacity .2s;}
-.modal-overlay.open{opacity:1;pointer-events:all;}
-.modal{background:var(--panel);border:1px solid var(--border2);border-radius:12px;width:380px;
-  overflow:hidden;transform:translateY(12px);transition:transform .2s;}
-.modal-overlay.open .modal{transform:translateY(0);}
-.modal-head{padding:16px 20px;border-bottom:1px solid var(--border);
-  display:flex;align-items:center;justify-content:space-between;}
-.modal-title{font-family:'Rajdhani',sans-serif;font-size:14px;font-weight:700;letter-spacing:2px;color:var(--text2);}
-.modal-close{background:none;border:1px solid var(--border2);border-radius:6px;width:26px;height:26px;
-  color:var(--muted);cursor:pointer;font-size:14px;display:flex;align-items:center;justify-content:center;transition:all .15s;}
-.modal-close:hover{border-color:rgba(248,113,113,.4);color:var(--red);}
-.modal-body{padding:20px;display:flex;flex-direction:column;gap:14px;}
-.modal-field label{display:block;font-family:'Share Tech Mono',monospace;font-size:9px;
-  letter-spacing:2px;color:var(--muted);margin-bottom:6px;text-transform:uppercase;}
-.modal-field input{width:100%;background:rgba(255,255,255,.03);border:1px solid var(--border2);
-  border-radius:6px;padding:9px 12px;font-family:'Share Tech Mono',monospace;font-size:12px;
-  color:var(--text2);outline:none;transition:border-color .2s;}
-.modal-field input:focus{border-color:rgba(74,222,128,.4);}
-.modal-field input::placeholder{color:var(--muted);}
-.modal-hint{font-size:10px;color:var(--muted);line-height:1.6;margin-top:4px;}
-.modal-hint a{color:var(--cyan);text-decoration:none;}
-.modal-save{width:100%;padding:10px;border-radius:7px;background:var(--green2);border:none;
-  color:#0b0f1a;font-family:'Rajdhani',sans-serif;font-size:13px;font-weight:700;letter-spacing:2px;cursor:pointer;transition:all .15s;}
-.modal-save:hover{background:var(--green);}
-.modal-status{font-family:'Share Tech Mono',monospace;font-size:10px;text-align:center;min-height:14px;letter-spacing:1px;}
-.modal-status.ok{color:var(--green);}
-.modal-status.err{color:var(--red);}
-.speed-btn{flex:1;padding:7px 4px;border-radius:6px;border:1px solid var(--border2);
-  background:transparent;color:var(--muted);font-family:'Share Tech Mono',monospace;
-  font-size:9px;letter-spacing:1px;cursor:pointer;transition:all .15s;}
-.speed-btn:hover{border-color:rgba(74,222,128,.4);color:var(--green);}
-.speed-btn.active{background:rgba(74,222,128,.12);border-color:rgba(74,222,128,.5);color:var(--green);}
+header{display:flex;align-items:center;justify-content:space-between;padding:0 24px;background:rgba(5,10,15,0.9);border-bottom:1px solid var(--border2);backdrop-filter:blur(20px);}
+.logo{display:flex;align-items:center;gap:12px;}
+.logo-icon{width:36px;height:36px;position:relative;}
+.logo-icon svg{width:100%;height:100%;}
+.logo-name{font-family:'Orbitron',monospace;font-size:18px;font-weight:900;color:var(--cyan2);letter-spacing:3px;text-shadow:0 0 20px var(--cyan);}
+.logo-ver{font-family:'Share Tech Mono',monospace;font-size:10px;color:var(--muted);letter-spacing:2px;}
+.header-center{display:flex;gap:4px;}
+.nav-btn{background:transparent;border:1px solid transparent;color:var(--muted);font-family:'Rajdhani',sans-serif;font-size:13px;font-weight:600;letter-spacing:1.5px;padding:6px 16px;cursor:pointer;transition:all .2s;text-transform:uppercase;border-radius:2px;}
+.nav-btn:hover,.nav-btn.active{background:rgba(0,200,255,0.1);border-color:var(--border2);color:var(--cyan2);}
+.nav-btn.active{border-bottom-color:var(--cyan);}
+.header-right{display:flex;align-items:center;gap:16px;}
+.status-dot{width:8px;height:8px;border-radius:50%;background:var(--green);box-shadow:0 0 8px var(--green);animation:pulse 2s infinite;}
+@keyframes pulse{0%,100%{opacity:1;}50%{opacity:.5;}}
+.clock{font-family:'Share Tech Mono',monospace;font-size:13px;color:var(--cyan);letter-spacing:2px;}
+.score-badge{background:rgba(255,204,0,0.1);border:1px solid rgba(255,204,0,0.3);color:var(--yellow);font-family:'Orbitron',monospace;font-size:11px;font-weight:700;padding:4px 10px;border-radius:2px;letter-spacing:1px;}
+/* MAIN CONTENT */
+main{overflow:hidden;position:relative;}
+/* PAGES */
+.page{display:none;height:100%;padding:20px 24px;overflow-y:auto;}
+.page.active{display:grid;}
+/* DASHBOARD */
+#page-dashboard{grid-template-columns:280px 1fr 260px;grid-template-rows:auto 1fr;gap:16px;}
+/* DECISIONS */
+#page-decisions{grid-template-columns:1fr 360px;gap:16px;}
+/* ACHIEVEMENTS */
+#page-achievements{grid-template-columns:1fr 1fr 1fr;gap:16px;}
+/* TASKS */
+#page-tasks{grid-template-columns:1fr 320px;gap:16px;}
+/* PANEL */
+.panel{background:var(--panel);border:1px solid var(--border);border-radius:4px;padding:16px;position:relative;overflow:hidden;}
+.panel::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--cyan),transparent);opacity:.5;}
+.panel-title{font-family:'Orbitron',monospace;font-size:11px;font-weight:700;color:var(--cyan);letter-spacing:2px;text-transform:uppercase;margin-bottom:14px;display:flex;align-items:center;gap:8px;}
+.panel-title::before{content:'';display:inline-block;width:4px;height:4px;background:var(--cyan);border-radius:50%;box-shadow:0 0 6px var(--cyan);}
+/* STATS GRID */
+.stats-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+.stat-card{background:var(--panel2);border:1px solid var(--border);border-radius:3px;padding:12px;text-align:center;cursor:pointer;transition:all .2s;}
+.stat-card:hover{border-color:var(--border2);transform:translateY(-2px);}
+.stat-val{font-family:'Orbitron',monospace;font-size:24px;font-weight:900;margin-bottom:4px;}
+.stat-val.cyan{color:var(--cyan);text-shadow:0 0 15px var(--cyan);}
+.stat-val.green{color:var(--green);text-shadow:0 0 15px var(--green);}
+.stat-val.yellow{color:var(--yellow);text-shadow:0 0 15px var(--yellow);}
+.stat-val.purple{color:var(--purple);text-shadow:0 0 15px var(--purple);}
+.stat-label{font-size:11px;color:var(--muted);letter-spacing:1px;text-transform:uppercase;}
+/* PROGRESS BAR */
+.progress-item{margin-bottom:14px;}
+.progress-header{display:flex;justify-content:space-between;margin-bottom:6px;}
+.progress-name{font-size:13px;font-weight:600;color:var(--text2);letter-spacing:.5px;}
+.progress-pct{font-family:'Share Tech Mono',monospace;font-size:12px;}
+.progress-bar{height:6px;background:rgba(255,255,255,0.05);border-radius:3px;overflow:hidden;}
+.progress-fill{height:100%;border-radius:3px;transition:width .5s ease;}
+.fill-cyan{background:linear-gradient(90deg,var(--cyan),var(--cyan2));box-shadow:0 0 8px var(--cyan);}
+.fill-green{background:linear-gradient(90deg,var(--green),#00ffaa);box-shadow:0 0 8px var(--green);}
+.fill-yellow{background:linear-gradient(90deg,var(--yellow),#ffaa00);box-shadow:0 0 8px var(--yellow);}
+.fill-red{background:linear-gradient(90deg,var(--red),#ff6666);box-shadow:0 0 8px var(--red);}
+.fill-purple{background:linear-gradient(90deg,var(--purple),#cc99ff);box-shadow:0 0 8px var(--purple);}
+/* ACTIVITY FEED */
+.feed-item{display:flex;gap:12px;padding:10px 0;border-bottom:1px solid rgba(255,255,255,0.04);align-items:flex-start;}
+.feed-item:last-child{border-bottom:none;}
+.feed-dot{width:8px;height:8px;border-radius:50%;margin-top:5px;flex-shrink:0;}
+.feed-content{flex:1;}
+.feed-text{font-size:13px;color:var(--text);line-height:1.5;}
+.feed-time{font-family:'Share Tech Mono',monospace;font-size:10px;color:var(--muted);margin-top:2px;}
+/* DECISIONS */
+.decision-card{background:var(--panel2);border:1px solid var(--border);border-radius:4px;padding:14px;margin-bottom:12px;cursor:pointer;transition:all .2s;}
+.decision-card:hover{border-color:var(--border2);}
+.decision-title{font-size:14px;font-weight:700;color:var(--text2);margin-bottom:6px;}
+.decision-meta{display:flex;gap:12px;font-size:11px;color:var(--muted);}
+.badge{padding:2px 8px;border-radius:2px;font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;}
+.badge-pending{background:rgba(255,204,0,0.15);color:var(--yellow);border:1px solid rgba(255,204,0,0.3);}
+.badge-resolved{background:rgba(0,255,136,0.15);color:var(--green);border:1px solid rgba(0,255,136,0.3);}
+.badge-critical{background:rgba(255,68,68,0.15);color:var(--red);border:1px solid rgba(255,68,68,0.3);}
+/* ACHIEVEMENTS */
+.ach-card{background:var(--panel2);border:1px solid var(--border);border-radius:4px;padding:14px;text-align:center;transition:all .2s;}
+.ach-card:hover{border-color:var(--border2);transform:translateY(-2px);}
+.ach-card.locked{opacity:.4;filter:grayscale(1);}
+.ach-icon{font-size:32px;margin-bottom:10px;}
+.ach-name{font-size:13px;font-weight:700;color:var(--text2);margin-bottom:4px;}
+.ach-desc{font-size:11px;color:var(--muted);line-height:1.5;}
+.ach-xp{font-family:'Orbitron',monospace;font-size:12px;color:var(--yellow);margin-top:6px;}
+/* TASK ITEMS */
+.task-item{display:flex;gap:12px;padding:12px;background:var(--panel2);border:1px solid var(--border);border-radius:3px;margin-bottom:8px;align-items:center;transition:all .2s;}
+.task-item:hover{border-color:var(--border2);}
+.task-check{width:18px;height:18px;border:2px solid var(--border2);border-radius:3px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.task-check.done{background:var(--green);border-color:var(--green);}
+.task-text{flex:1;font-size:13px;color:var(--text);}
+.task-text.done{text-decoration:line-through;color:var(--muted);}
+.task-priority{font-size:10px;font-weight:700;letter-spacing:1px;padding:2px 6px;border-radius:2px;}
+/* RADAR CHART */
+.radar-container{display:flex;justify-content:center;align-items:center;padding:10px;}
+svg.radar{overflow:visible;}
+/* SCROLLBAR */
+::-webkit-scrollbar{width:4px;}
+::-webkit-scrollbar-track{background:var(--bg);}
+::-webkit-scrollbar-thumb{background:var(--muted2);border-radius:2px;}
+/* CORNER DECORS */
+.corner-tl,.corner-tr,.corner-bl,.corner-br{position:absolute;width:12px;height:12px;}
+.corner-tl{top:8px;left:8px;border-top:2px solid var(--cyan);border-left:2px solid var(--cyan);}
+.corner-tr{top:8px;right:8px;border-top:2px solid var(--cyan);border-right:2px solid var(--cyan);}
+.corner-bl{bottom:8px;left:8px;border-bottom:2px solid var(--cyan);border-left:2px solid var(--cyan);}
+.corner-br{bottom:8px;right:8px;border-bottom:2px solid var(--cyan);border-right:2px solid var(--cyan);}
+/* MODAL */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.8);z-index:100;display:none;align-items:center;justify-content:center;backdrop-filter:blur(4px);}
+.modal-overlay.open{display:flex;}
+.modal{background:var(--panel);border:1px solid var(--border2);border-radius:6px;padding:24px;width:480px;max-height:80vh;overflow-y:auto;position:relative;}
+.modal-title{font-family:'Orbitron',monospace;font-size:14px;color:var(--cyan2);letter-spacing:2px;margin-bottom:20px;}
+.modal-close{position:absolute;top:16px;right:16px;background:transparent;border:none;color:var(--muted);cursor:pointer;font-size:18px;}
+.form-group{margin-bottom:16px;}
+.form-label{font-size:12px;color:var(--muted);letter-spacing:1px;text-transform:uppercase;margin-bottom:6px;display:block;}
+.form-input,.form-select,.form-textarea{width:100%;background:var(--bg2);border:1px solid var(--border);color:var(--text2);font-family:'Rajdhani',sans-serif;font-size:14px;padding:10px 12px;border-radius:3px;outline:none;transition:border-color .2s;}
+.form-input:focus,.form-select:focus,.form-textarea:focus{border-color:var(--cyan);}
+.form-textarea{resize:vertical;min-height:80px;}
+.btn-primary{background:linear-gradient(135deg,rgba(0,200,255,0.2),rgba(0,200,255,0.1));border:1px solid var(--cyan);color:var(--cyan2);font-family:'Rajdhani',sans-serif;font-size:13px;font-weight:700;letter-spacing:2px;padding:10px 24px;cursor:pointer;border-radius:3px;text-transform:uppercase;transition:all .2s;}
+.btn-primary:hover{background:linear-gradient(135deg,rgba(0,200,255,0.3),rgba(0,200,255,0.15));box-shadow:0 0 15px rgba(0,200,255,0.3);}
+.btn-secondary{background:transparent;border:1px solid var(--border);color:var(--muted);font-family:'Rajdhani',sans-serif;font-size:13px;font-weight:600;letter-spacing:1px;padding:10px 20px;cursor:pointer;border-radius:3px;text-transform:uppercase;margin-left:8px;transition:all .2s;}
+.btn-secondary:hover{border-color:var(--border2);color:var(--text);}
+/* GLOW EFFECT */
+@keyframes glow{0%,100%{opacity:.8;}50%{opacity:1;}}
+.glow-anim{animation:glow 3s infinite;}
+/* RESPONSIVE FIX */
+@media(max-width:1200px){
+#page-dashboard{grid-template-columns:1fr 1fr;}
+#page-achievements{grid-template-columns:1fr 1fr;}
+}
 </style>
 </head>
-<body class="s-idle">
-
-<!-- ═══════════════════════ VIEW A — CHAT ═══════════════════════ -->
-<div id="chat-view" class="view">
-
-  <div class="hdr">
-    <div class="hdr-l">
-      <div class="logo-box">
-        <svg viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
-      </div>
-      <div>
-        <div class="logo-name">LOHAN IA</div>
-        <div class="logo-tag" id="logoTag">PERSONAL INTELLIGENCE SYSTEM</div>
-      </div>
+<body>
+<div id="app">
+<!-- HEADER -->
+<header>
+  <div class="logo">
+    <div class="logo-icon">
+      <svg viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <polygon points="18,2 34,10 34,26 18,34 2,26 2,10" fill="none" stroke="#00c8ff" stroke-width="1.5"/>
+        <polygon points="18,8 28,13 28,23 18,28 8,23 8,13" fill="none" stroke="#00c8ff" stroke-width="1" opacity="0.5"/>
+        <circle cx="18" cy="18" r="4" fill="#00c8ff" opacity="0.8"/>
+        <line x1="18" y1="2" x2="18" y2="8" stroke="#00c8ff" stroke-width="1"/>
+        <line x1="18" y1="28" x2="18" y2="34" stroke="#00c8ff" stroke-width="1"/>
+        <line x1="2" y1="10" x2="8" y2="13" stroke="#00c8ff" stroke-width="1"/>
+        <line x1="28" y1="23" x2="34" y2="26" stroke="#00c8ff" stroke-width="1"/>
+        <line x1="2" y1="26" x2="8" y2="23" stroke="#00c8ff" stroke-width="1"/>
+        <line x1="28" y1="13" x2="34" y2="10" stroke="#00c8ff" stroke-width="1"/>
+      </svg>
     </div>
-    <div class="hdr-r">
-      <button class="hdr-btn" id="modeBtn" onclick="toggleMode()">
-        <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
-        <span id="modeBtnLabel">MODO PÚBLICO</span>
-      </button>
-      <button class="hdr-btn warn" onclick="switchToPres()">
-        <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
-        APRESENTAÇÃO
-      </button>
-      <button class="hdr-btn" onclick="openModal()">⚙ VOZ</button>
-      <span class="badge-web"><div class="web-dot"></div>WEB</span>
-      <span id="clk" style="font-family:'Share Tech Mono',monospace;font-size:10px;">--:--:--</span>
-      <span class="badge-live"><div class="live-dot"></div>ONLINE</span>
+    <div>
+      <div class="logo-name">LOHAN OS</div>
+      <div class="logo-ver">SISTEMA OPERACIONAL PESSOAL v5.0</div>
     </div>
   </div>
-
-  <div class="scorebar" id="scorebar">
-    <div class="sc-item">
-      <div class="sc-label">Score LOHAN</div>
-      <div class="sc-val" style="color:var(--yellow)">51 <span style="font-size:11px;color:var(--muted)">/ 100</span></div>
-      <div class="sc-bar"><div class="sc-fill" style="width:51%;background:var(--yellow)"></div></div>
-    </div>
-    <div class="sc-item">
-      <div class="sc-label">Energia</div>
-      <div class="sc-val" style="color:var(--green)">71%</div>
-      <div class="sc-bar"><div class="sc-fill" style="width:71%;background:var(--green)"></div></div>
-    </div>
-    <div class="sc-item">
-      <div class="sc-label">Execução</div>
-      <div class="sc-val" style="color:var(--red)">33%</div>
-      <div class="sc-bar"><div class="sc-fill" style="width:33%;background:var(--red)"></div></div>
-    </div>
-    <div class="sc-item">
-      <div class="sc-label">Direção</div>
-      <div class="sc-val" style="color:var(--blue)">68%</div>
-      <div class="sc-bar"><div class="sc-fill" style="width:68%;background:var(--blue)"></div></div>
-    </div>
-    <div class="sc-item">
-      <div class="sc-label">Saldo do Mês</div>
-      <div class="sc-val" style="color:var(--text2)">R$ 564</div>
-      <div class="sc-bar"><div class="sc-fill" style="width:13%;background:var(--orange)"></div></div>
-    </div>
+  <nav class="header-center">
+    <button class="nav-btn active" onclick="showPage('dashboard')">Dashboard</button>
+    <button class="nav-btn" onclick="showPage('decisions')">Decisões</button>
+    <button class="nav-btn" onclick="showPage('achievements')">Conquistas</button>
+    <button class="nav-btn" onclick="showPage('tasks')">Tarefas</button>
+  </nav>
+  <div class="header-right">
+    <div class="status-dot"></div>
+    <span id="clock" class="clock">00:00:00</span>
+    <div class="score-badge" id="totalScore">XP: 0</div>
   </div>
+</header>
 
-  <div class="chat" id="chat">
-    <div class="welcome" id="welcome">
-      <div class="welcome-title" id="welcomeTitle">Bom dia. Sou o <span>LOHAN IA</span>.</div>
-      <div class="welcome-sub" id="welcomeSub">Seu sistema de inteligência pessoal com acesso à internet em tempo real. Pergunte qualquer coisa ou clique no microfone para falar.</div>
-      <div class="web-notice">⬡ WEB SEARCH ATIVO — Dados em tempo real — Clique no microfone para falar</div>
-      <div class="pills" id="pillsEl"></div>
-    </div>
-  </div>
+<!-- MAIN -->
+<main>
 
-  <div class="inputbar">
-    <div class="inp-shell">
-      <button class="mic-btn" id="micBtn" onclick="toggleMic()">
-        <svg viewBox="0 0 24 24">
-          <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/>
-          <path d="M19 10v2a7 7 0 0 1-14 0v-2"/>
-          <line x1="12" y1="19" x2="12" y2="23"/>
-          <line x1="8" y1="23" x2="16" y2="23"/>
+<!-- DASHBOARD PAGE -->
+<div id="page-dashboard" class="page active">
+
+  <!-- LEFT COLUMN -->
+  <div style="grid-column:1;display:flex;flex-direction:column;gap:16px;">
+    
+    <div class="panel">
+      <div class="corner-tl"></div><div class="corner-tr"></div>
+      <div class="corner-bl"></div><div class="corner-br"></div>
+      <div class="panel-title">Atributos Pessoais</div>
+      <div id="attrs-chart" class="radar-container">
+        <svg class="radar" width="220" height="220" viewBox="-110 -110 220 220">
+          <polygon id="radar-bg1" points="0,-80 69.3,-40 69.3,40 0,80 -69.3,40 -69.3,-40" fill="none" stroke="rgba(0,200,255,0.1)" stroke-width="1"/>
+          <polygon id="radar-bg2" points="0,-60 52,-30 52,30 0,60 -52,30 -52,-30" fill="none" stroke="rgba(0,200,255,0.1)" stroke-width="1"/>
+          <polygon id="radar-bg3" points="0,-40 34.6,-20 34.6,20 0,40 -34.6,20 -34.6,-20" fill="none" stroke="rgba(0,200,255,0.1)" stroke-width="1"/>
+          <polygon id="radar-bg4" points="0,-20 17.3,-10 17.3,10 0,20 -17.3,10 -17.3,-10" fill="none" stroke="rgba(0,200,255,0.1)" stroke-width="1"/>
+          <line x1="0" y1="-80" x2="0" y2="80" stroke="rgba(0,200,255,0.1)" stroke-width="1"/>
+          <line x1="-69.3" y1="-40" x2="69.3" y2="40" stroke="rgba(0,200,255,0.1)" stroke-width="1"/>
+          <line x1="-69.3" y1="40" x2="69.3" y2="-40" stroke="rgba(0,200,255,0.1)" stroke-width="1"/>
+          <polygon id="radar-data" points="0,-56 48.5,-28 41.6,24 0,32 -34.6,20 -48.1,-28" fill="rgba(0,200,255,0.15)" stroke="#00c8ff" stroke-width="2"/>
+          <text x="0" y="-90" text-anchor="middle" fill="#00c8ff" font-size="10" font-family="Rajdhani">Foco</text>
+          <text x="80" y="-44" text-anchor="start" fill="#00c8ff" font-size="10" font-family="Rajdhani">Energia</text>
+          <text x="80" y="48" text-anchor="start" fill="#00c8ff" font-size="10" font-family="Rajdhani">Exec.</text>
+          <text x="0" y="100" text-anchor="middle" fill="#00c8ff" font-size="10" font-family="Rajdhani">Social</text>
+          <text x="-80" y="48" text-anchor="end" fill="#00c8ff" font-size="10" font-family="Rajdhani">Saúde</text>
+          <text x="-80" y="-44" text-anchor="end" fill="#00c8ff" font-size="10" font-family="Rajdhani">Aprend.</text>
         </svg>
-      </button>
-      <textarea id="inp" placeholder="Pergunte qualquer coisa..." rows="1"
-        onkeydown="handleKey(event)" oninput="grow(this)" autofocus></textarea>
-      <button class="sbtn" onclick="sendChat()">
-        <svg viewBox="0 0 24 24"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
-      </button>
-    </div>
-    <div class="inp-foot">
-      <span>Enter para enviar · Shift+Enter nova linha</span>
-      <span class="voicesta" id="voiceStatus">microfone pronto</span>
-      <span class="weba">web search · claude sonnet</span>
-    </div>
-  </div>
-</div>
-
-<!-- ═══════════════════════ VIEW B — APRESENTAÇÃO ═══════════════════════ -->
-<div id="pres-view" class="view hidden">
-
-  <div class="orb-stage" onclick="presOrbClick()">
-    <div class="oring or3"></div>
-    <div class="oring or2"></div>
-    <div class="oring or1"></div>
-    <div id="orb"><span class="orb-l">L</span></div>
-    <div class="scan-line"></div>
-  </div>
-
-  <div class="pip-row">
-    <div class="pip"></div>
-    <span class="pip-lbl" id="pipLbl">INICIANDO…</span>
-  </div>
-
-  <div class="pres-text">
-    <div id="typing-line"><span class="tcur"></span></div>
-    <div class="bars" id="presBars"></div>
-    <div class="prog-row" id="progRow">
-      <span class="prog-lbl" id="progLbl">CARREGANDO</span>
-      <div class="prog-bar"><div class="prog-fill" id="progFill"></div></div>
-    </div>
-  </div>
-
-  <div class="pres-controls">
-    <button class="pres-ctrl-btn" onclick="switchToChat()">← CHAT</button>
-    <span class="pres-meta">SÃO PAULO · BR</span>
-    <span id="pres-clock" style="font-family:'Share Tech Mono',monospace;font-size:10px;">--:--:--</span>
-    <button class="pres-ctrl-btn" id="presVozBtn" onclick="togglePresVoz()">⊕ VOZ</button>
-    <button class="pres-ctrl-btn" onclick="restartPres()">↺ REPLAY</button>
-    <span class="pres-meta">LOHAN AI v4.0</span>
-  </div>
-</div>
-
-<!-- VOICE TOAST -->
-<div class="voice-toast" id="voiceToast"></div>
-
-<!-- CONFIG MODAL -->
-<div class="modal-overlay" id="cfgModal">
-  <div class="modal">
-    <div class="modal-head">
-      <div class="modal-title">CONFIGURAR VOZ</div>
-      <button class="modal-close" onclick="closeModal()">×</button>
-    </div>
-    <div class="modal-body">
-      <div class="modal-field">
-        <label>ElevenLabs API Key</label>
-        <input id="elevenKey" type="password" placeholder="sk_..." autocomplete="off">
-        <div class="modal-hint">Grátis em <a href="https://elevenlabs.io" target="_blank">elevenlabs.io</a></div>
       </div>
-      <div class="modal-field">
-        <label>Voice ID</label>
-        <input id="voiceId" type="text" value="eUAnqvLQWNX29twcYLUM" autocomplete="off">
-        <div class="modal-hint">Cole o ID do Voice Library ou deixe o padrão (britânico executivo).</div>
+    </div>
+
+    <div class="panel">
+      <div class="corner-tl"></div><div class="corner-tr"></div>
+      <div class="panel-title">Progresso Diário</div>
+      <div id="progress-bars"></div>
+    </div>
+
+  </div>
+
+  <!-- CENTER COLUMN -->
+  <div style="grid-column:2;display:flex;flex-direction:column;gap:16px;">
+
+    <div class="stats-grid">
+      <div class="stat-card" onclick="showPage('tasks')">
+        <div class="stat-val cyan" id="stat-tasks">0</div>
+        <div class="stat-label">Tarefas Hoje</div>
       </div>
-      <div class="modal-field">
-        <label>Velocidade de Voz</label>
-        <div style="display:flex;gap:8px;margin-top:4px;">
-          <button class="speed-btn" id="spd-slow" onclick="setSpeedMode('slow')">LENTO</button>
-          <button class="speed-btn active" id="spd-normal" onclick="setSpeedMode('normal')">NORMAL</button>
-          <button class="speed-btn" id="spd-fast" onclick="setSpeedMode('fast')">RÁPIDO</button>
+      <div class="stat-card" onclick="showPage('decisions')">
+        <div class="stat-val yellow" id="stat-decisions">0</div>
+        <div class="stat-label">Decisões</div>
+      </div>
+      <div class="stat-card" onclick="showPage('achievements')">
+        <div class="stat-val green" id="stat-achievements">0</div>
+        <div class="stat-label">Conquistas</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-val purple" id="stat-streak">0</div>
+        <div class="stat-label">Dias Seguidos</div>
+      </div>
+    </div>
+
+    <div class="panel" style="flex:1;">
+      <div class="corner-tl"></div><div class="corner-tr"></div>
+      <div class="panel-title" style="justify-content:space-between;">
+        <span>Feed de Atividades</span>
+        <button class="btn-primary" style="font-size:10px;padding:4px 12px;" onclick="openModal('modal-activity')">+ NOVA</button>
+      </div>
+      <div id="feed-list"></div>
+    </div>
+
+  </div>
+
+  <!-- RIGHT COLUMN -->
+  <div style="grid-column:3;display:flex;flex-direction:column;gap:16px;">
+
+    <div class="panel">
+      <div class="corner-tl"></div><div class="corner-tr"></div>
+      <div class="panel-title">Score LOHAN</div>
+      <div style="text-align:center;padding:16px 0;">
+        <div style="font-family:'Orbitron',monospace;font-size:48px;font-weight:900;color:var(--cyan);text-shadow:0 0 30px var(--cyan);line-height:1;" id="main-score">51</div>
+        <div style="font-size:11px;color:var(--muted);letter-spacing:2px;margin-top:6px;">/ 100 XP</div>
+        <div style="margin-top:16px;">
+          <div class="progress-bar" style="height:10px;">
+            <div class="progress-fill fill-cyan" id="score-bar" style="width:51%"></div>
+          </div>
         </div>
       </div>
-      <button class="modal-save" onclick="saveVoiceConfig()">SALVAR</button>
-      <div class="modal-status" id="modalStatus"></div>
+    </div>
+
+    <div class="panel">
+      <div class="corner-tl"></div><div class="corner-tr"></div>
+      <div class="panel-title">Próximas Ações</div>
+      <div id="next-actions"></div>
+    </div>
+
+    <div class="panel">
+      <div class="corner-tl"></div><div class="corner-tr"></div>
+      <div class="panel-title">Status Sistema</div>
+      <div id="system-status"></div>
+    </div>
+
+  </div>
+
+</div>
+<!-- DECISIONS PAGE -->
+<div id="page-decisions" class="page" style="grid-template-columns:1fr 340px;gap:16px;">
+
+  <div style="display:flex;flex-direction:column;gap:16px;">
+    <div class="panel">
+      <div class="corner-tl"></div><div class="corner-tr"></div>
+      <div class="panel-title" style="justify-content:space-between;">
+        <span>Central de Decisões</span>
+        <button class="btn-primary" style="font-size:10px;padding:4px 12px;" onclick="openModal('modal-decision')">+ NOVA DECISÃO</button>
+      </div>
+      <div id="decisions-list"></div>
+    </div>
+  </div>
+
+  <div style="display:flex;flex-direction:column;gap:16px;">
+    <div class="panel">
+      <div class="corner-tl"></div><div class="corner-tr"></div>
+      <div class="panel-title">Estatísticas</div>
+      <div class="stats-grid">
+        <div class="stat-card"><div class="stat-val yellow" id="dec-pending">0</div><div class="stat-label">Pendentes</div></div>
+        <div class="stat-card"><div class="stat-val green" id="dec-resolved">0</div><div class="stat-label">Resolvidas</div></div>
+        <div class="stat-card"><div class="stat-val red" id="dec-critical">0</div><div class="stat-label">Críticas</div></div>
+        <div class="stat-card"><div class="stat-val cyan" id="dec-total">0</div><div class="stat-label">Total</div></div>
+      </div>
+    </div>
+    <div class="panel">
+      <div class="corner-tl"></div><div class="corner-tr"></div>
+      <div class="panel-title">Matriz de Urgência</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px;">
+        <div style="background:rgba(255,68,68,0.1);border:1px solid rgba(255,68,68,0.2);border-radius:3px;padding:12px;text-align:center;">
+          <div style="font-size:10px;color:var(--red);letter-spacing:1px;text-transform:uppercase;margin-bottom:4px;">Urgente+Importante</div>
+          <div id="matrix-q1" style="font-family:'Orbitron',monospace;font-size:22px;color:var(--red);">0</div>
+        </div>
+        <div style="background:rgba(255,204,0,0.1);border:1px solid rgba(255,204,0,0.2);border-radius:3px;padding:12px;text-align:center;">
+          <div style="font-size:10px;color:var(--yellow);letter-spacing:1px;text-transform:uppercase;margin-bottom:4px;">Importante</div>
+          <div id="matrix-q2" style="font-family:'Orbitron',monospace;font-size:22px;color:var(--yellow);">0</div>
+        </div>
+        <div style="background:rgba(0,200,255,0.1);border:1px solid rgba(0,200,255,0.2);border-radius:3px;padding:12px;text-align:center;">
+          <div style="font-size:10px;color:var(--cyan);letter-spacing:1px;text-transform:uppercase;margin-bottom:4px;">Urgente</div>
+          <div id="matrix-q3" style="font-family:'Orbitron',monospace;font-size:22px;color:var(--cyan);">0</div>
+        </div>
+        <div style="background:rgba(74,122,153,0.1);border:1px solid rgba(74,122,153,0.2);border-radius:3px;padding:12px;text-align:center;">
+          <div style="font-size:10px;color:var(--muted);letter-spacing:1px;text-transform:uppercase;margin-bottom:4px;">Delegar</div>
+          <div id="matrix-q4" style="font-family:'Orbitron',monospace;font-size:22px;color:var(--muted);">0</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- ACHIEVEMENTS PAGE -->
+<div id="page-achievements" class="page" style="grid-template-columns:repeat(4,1fr);gap:16px;align-content:start;">
+  <div style="grid-column:1/-1;" class="panel">
+    <div class="corner-tl"></div><div class="corner-tr"></div>
+    <div style="display:flex;justify-content:space-between;align-items:center;">
+      <div class="panel-title">Sistema de Conquistas</div>
+      <div style="display:flex;gap:16px;align-items:center;">
+        <span style="font-family:'Share Tech Mono',monospace;font-size:12px;color:var(--muted);">TOTAL XP: <span id="total-xp" style="color:var(--yellow);">0</span></span>
+        <span style="font-family:'Share Tech Mono',monospace;font-size:12px;color:var(--muted);">NÍVEL: <span id="user-level" style="color:var(--cyan);">1</span></span>
+        <div class="progress-bar" style="width:200px;height:8px;"><div class="progress-fill fill-yellow" id="level-bar" style="width:0%"></div></div>
+      </div>
+    </div>
+  </div>
+  <div id="achievements-grid" style="grid-column:1/-1;display:grid;grid-template-columns:repeat(4,1fr);gap:12px;"></div>
+</div>
+
+<!-- TASKS PAGE -->
+<div id="page-tasks" class="page" style="grid-template-columns:1fr 300px;gap:16px;">
+
+  <div style="display:flex;flex-direction:column;gap:16px;">
+    <div class="panel">
+      <div class="corner-tl"></div><div class="corner-tr"></div>
+      <div class="panel-title" style="justify-content:space-between;">
+        <span>Lista de Tarefas</span>
+        <button class="btn-primary" style="font-size:10px;padding:4px 12px;" onclick="openModal('modal-task')">+ NOVA TAREFA</button>
+      </div>
+      <div style="display:flex;gap:8px;margin-bottom:16px;">
+        <button class="nav-btn active" onclick="filterTasks('all',this)">Todas</button>
+        <button class="nav-btn" onclick="filterTasks('pending',this)">Pendentes</button>
+        <button class="nav-btn" onclick="filterTasks('done',this)">Concluídas</button>
+      </div>
+      <div id="tasks-list"></div>
+    </div>
+  </div>
+
+  <div style="display:flex;flex-direction:column;gap:16px;">
+    <div class="panel">
+      <div class="corner-tl"></div><div class="corner-tr"></div>
+      <div class="panel-title">Progresso</div>
+      <div style="text-align:center;padding:12px 0;">
+        <div style="font-family:'Orbitron',monospace;font-size:36px;font-weight:900;color:var(--green);text-shadow:0 0 20px var(--green);" id="task-pct">0%</div>
+        <div style="font-size:11px;color:var(--muted);margin-top:4px;">Tarefas concluídas</div>
+        <div class="progress-bar" style="margin-top:12px;height:8px;"><div class="progress-fill fill-green" id="task-bar" style="width:0%"></div></div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px;">
+        <div class="stat-card"><div class="stat-val green" id="tasks-done-count">0</div><div class="stat-label">Feitas</div></div>
+        <div class="stat-card"><div class="stat-val yellow" id="tasks-pending-count">0</div><div class="stat-label">Pendentes</div></div>
+      </div>
+    </div>
+    <div class="panel">
+      <div class="corner-tl"></div><div class="corner-tr"></div>
+      <div class="panel-title">Por Categoria</div>
+      <div id="task-categories"></div>
+    </div>
+  </div>
+
+</div>
+
+</main>
+<!-- MODALS -->
+<div class="modal-overlay" id="modal-activity">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal('modal-activity')">✕</button>
+    <div class="modal-title">NOVA ATIVIDADE</div>
+    <div class="form-group"><label class="form-label">Descrição</label><input class="form-input" id="act-desc" placeholder="O que aconteceu?"></div>
+    <div class="form-group"><label class="form-label">Tipo</label>
+      <select class="form-select" id="act-type">
+        <option value="cyan">Conquista</option>
+        <option value="green">Meta atingida</option>
+        <option value="yellow">Lembrete</option>
+        <option value="red">Problema</option>
+      </select>
+    </div>
+    <div style="display:flex;justify-content:flex-end;margin-top:16px;">
+      <button class="btn-secondary" onclick="closeModal('modal-activity')">Cancelar</button>
+      <button class="btn-primary" onclick="addActivity()">REGISTRAR</button>
     </div>
   </div>
 </div>
 
+<div class="modal-overlay" id="modal-decision">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal('modal-decision')">✕</button>
+    <div class="modal-title">NOVA DECISÃO</div>
+    <div class="form-group"><label class="form-label">Título da Decisão</label><input class="form-input" id="dec-title-inp" placeholder="Qual é a decisão?"></div>
+    <div class="form-group"><label class="form-label">Contexto / Detalhes</label><textarea class="form-textarea" id="dec-context" placeholder="Descreva o contexto..."></textarea></div>
+    <div class="form-group"><label class="form-label">Categoria</label>
+      <select class="form-select" id="dec-cat">
+        <option>Carreira</option>
+        <option>Finanças</option>
+        <option>Saúde</option>
+        <option>Relacionamento</option>
+        <option>Projeto</option>
+        <option>Outro</option>
+      </select>
+    </div>
+    <div class="form-group"><label class="form-label">Urgência</label>
+      <select class="form-select" id="dec-urgency">
+        <option value="critical">Crítica — Urgente + Importante</option>
+        <option value="important">Importante — Não Urgente</option>
+        <option value="urgent">Urgente — Menos Importante</option>
+        <option value="delegate">Delegar / Adiar</option>
+      </select>
+    </div>
+    <div style="display:flex;justify-content:flex-end;margin-top:16px;">
+      <button class="btn-secondary" onclick="closeModal('modal-decision')">Cancelar</button>
+      <button class="btn-primary" onclick="addDecision()">REGISTRAR</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="modal-task">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal('modal-task')">✕</button>
+    <div class="modal-title">NOVA TAREFA</div>
+    <div class="form-group"><label class="form-label">Tarefa</label><input class="form-input" id="task-title-inp" placeholder="O que precisa ser feito?"></div>
+    <div class="form-group"><label class="form-label">Categoria</label>
+      <select class="form-select" id="task-cat">
+        <option>Trabalho</option>
+        <option>Pessoal</option>
+        <option>Saúde</option>
+        <option>Estudo</option>
+        <option>Projeto</option>
+      </select>
+    </div>
+    <div class="form-group"><label class="form-label">Prioridade</label>
+      <select class="form-select" id="task-priority-inp">
+        <option value="high">Alta</option>
+        <option value="medium">Média</option>
+        <option value="low">Baixa</option>
+      </select>
+    </div>
+    <div style="display:flex;justify-content:flex-end;margin-top:16px;">
+      <button class="btn-secondary" onclick="closeModal('modal-task')">Cancelar</button>
+      <button class="btn-primary" onclick="addTask()">ADICIONAR</button>
+    </div>
+  </div>
+</div>
+
+</div>
 <script>
-'use strict';
+// ==================== STATE ====================
+let state = {
+  score: 51,
+  streak: 7,
+  activities: [
+    {id:1, text:'Completou módulo de Python', type:'green', time:'Há 2h'},
+    {id:2, text:'Tomou decisão sobre o projeto LOHAN', type:'cyan', time:'Hoje'},
+    {id:3, text:'Concluiu treino matinal', type:'yellow', time:'Ontem'},
+    {id:4, text:'Leu 30 páginas do livro', type:'green', time:'Ontem'},
+  ],
+  decisions: [
+    {id:1, title:'Definir tech stack do LOHAN OS', context:'Preciso escolher entre React ou Vue para o projeto', cat:'Projeto', urgency:'critical', status:'pending'},
+    {id:2, title:'Plano de estudos Q1 2026', context:'Montar cronograma de estudos para o trimestre', cat:'Carreira', urgency:'important', status:'pending'},
+    {id:3, title:'Investimento mensal', context:'Definir percentual de renda para investir', cat:'Finanças', urgency:'important', status:'resolved'},
+  ],
+  tasks: [
+    {id:1, title:'Revisar código do projeto IA', cat:'Trabalho', priority:'high', done:false},
+    {id:2, title:'Meditar 20 minutos', cat:'Saúde', priority:'medium', done:true},
+    {id:3, title:'Estudar JavaScript avançado', cat:'Estudo', priority:'high', done:false},
+    {id:4, title:'Enviar relatório semanal', cat:'Trabalho', priority:'high', done:true},
+    {id:5, title:'Exercício físico', cat:'Saúde', priority:'medium', done:false},
+    {id:6, title:'Leitura 30min', cat:'Pessoal', priority:'low', done:false},
+  ],
+  achievements: [
+    {id:1, icon:'🎯', name:'Foco Total', desc:'Completou 7 dias sem distrações', xp:100, unlocked:true},
+    {id:2, icon:'⚡', name:'Alta Energia', desc:'Energia acima de 80% por 5 dias', xp:150, unlocked:true},
+    {id:3, icon:'🧠', name:'Mente Afiada', desc:'Estudou por 30 dias consecutivos', xp:200, unlocked:false},
+    {id:4, icon:'💪', name:'Força de Vontade', desc:'Completou todas as tarefas diárias', xp:120, unlocked:true},
+    {id:5, icon:'🚀', name:'Lançamento', desc:'Publicou o primeiro projeto', xp:300, unlocked:false},
+    {id:6, icon:'📚', name:'Estudioso', desc:'Leu 10 livros em 2026', xp:250, unlocked:false},
+    {id:7, icon:'🌟', name:'Estrela em Ascensão', desc:'Alcançou score 75+', xp:200, unlocked:false},
+    {id:8, icon:'🏆', name:'Campeão', desc:'Alcançou score 100', xp:500, unlocked:false},
+    {id:9, icon:'🎮', name:'Jogador Dedicado', desc:'Usou o sistema por 30 dias', xp:100, unlocked:true},
+    {id:10, icon:'🔥', name:'Em Chamas', desc:'Sequência de 14 dias', xp:150, unlocked:false},
+    {id:11, icon:'💡', name:'Inovador', desc:'Criou 5 projetos originais', xp:300, unlocked:false},
+    {id:12, icon:'🎵', name:'Harmonia', desc:'Equilibrou todas as áreas da vida', xp:400, unlocked:false},
+  ],
+  progress: [
+    {name:'Produtividade', pct:72, color:'fill-cyan'},
+    {name:'Saúde', pct:65, color:'fill-green'},
+    {name:'Estudos', pct:80, color:'fill-yellow'},
+    {name:'Projetos', pct:45, color:'fill-purple'},
+    {name:'Finanças', pct:58, color:'fill-red'},
+  ],
+  taskFilter: 'all'
+};
 
-/* ═══════════════════════════════════════════════════════
-   CONSTANTS
-   ═══════════════════════════════════════════════════════ */
-const API = 'https://api.anthropic.com/v1/messages';
+// ==================== HELPERS ====================
+function save() { try { localStorage.setItem('lohan-os-v5', JSON.stringify(state)); } catch(e){} }
+function load() { try { const d = localStorage.getItem('lohan-os-v5'); if(d) { const p = JSON.parse(d); Object.assign(state, p); } } catch(e){} }
 
-/* ═══════════════════════════════════════════════════════
-   GLOBAL STATE
-   ═══════════════════════════════════════════════════════ */
-let hist        = [];
-let busy        = false;
-let publicMode  = false;
-let recognition = null;
-let isRecording = false;
-let toastTimer  = null;
-let currentAudio = null;
-let barRaf       = null;
-let barAnalyser  = null;
-
-// Voice config — Browser Engine v3
-let _voice      = null;
-let _speaking   = false;
-let _voiceReady = false;
-
-// Presentation state
-let presRunning = false;
-let presStop    = false;
-let presVoz     = false; // TTS on in presentation mode
-
-/* ═══════════════════════════════════════════════════════
-   ORB STATE MACHINE
-   Single CSS class on <body> drives ALL visuals.
-   ═══════════════════════════════════════════════════════ */
-const ORB_STATES = ['idle','listening','processing','speaking','presenting'];
-function setOrbState(s){
-  ORB_STATES.forEach(x => document.body.classList.remove('s-'+x));
-  document.body.classList.add('s-'+s);
+function showPage(id) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('page-' + id).classList.add('active');
+  const btns = Array.from(document.querySelectorAll('.nav-btn'));
+  const map = {dashboard:0,decisions:1,achievements:2,tasks:3};
+  btns[map[id]].classList.add('active');
+  renderAll();
 }
 
-/* ═══════════════════════════════════════════════════════
-   AUDIO BARS
-   ═══════════════════════════════════════════════════════ */
-const NUM_BARS = 16;
-function buildBars(containerId){
-  const el = document.getElementById(containerId);
-  if (!el || el.children.length) return;
-  for(let i=0;i<NUM_BARS;i++){const b=document.createElement('div');b.className='bar';b.style.height='3px';el.appendChild(b);}
-}
-buildBars('presBars');
+function openModal(id) { document.getElementById(id).classList.add('open'); }
+function closeModal(id) { document.getElementById(id).classList.remove('open'); }
 
-function runBars(analyser){
-  cancelAnimationFrame(barRaf);
-  barAnalyser = analyser || null;
-  const containers = ['presBars'];
-  const data = barAnalyser ? new Uint8Array(barAnalyser.frequencyBinCount) : null;
-
-  function tick(){
-    containers.forEach(id=>{
-      const bars = document.getElementById(id)?.querySelectorAll('.bar');
-      if(!bars) return;
-      if(data && barAnalyser){
-        barAnalyser.getByteFrequencyData(data);
-        bars.forEach((b,i)=>{
-          const idx = Math.floor(i*data.length/NUM_BARS);
-          b.style.height=(3+data[idx]/255*17)+'px';
-        });
-        const avg = data.reduce((a,c)=>a+c,0)/data.length;
-        document.getElementById('orb')?.style.setProperty('--lvl', avg/255);
-      } else {
-        const t = Date.now()/280;
-        bars.forEach((b,i)=>{ b.style.height=(3+Math.abs(Math.sin(t+i*.55))*12)+'px'; });
-      }
-    });
-    barRaf = requestAnimationFrame(tick);
-  }
-  tick();
+// ==================== RENDER ====================
+function renderAll() {
+  renderDashboard();
+  renderDecisions();
+  renderAchievements();
+  renderTasks();
+  updateScore();
 }
 
-function stopBars(){
-  cancelAnimationFrame(barRaf);
-  document.querySelectorAll('.bar').forEach(b=>b.style.height='3px');
-  document.getElementById('orb')?.style.setProperty('--lvl',0);
-}
+function renderDashboard() {
+  // Progress bars
+  const pb = document.getElementById('progress-bars');
+  if(pb) pb.innerHTML = state.progress.map(p => `
+    <div class="progress-item">
+      <div class="progress-header">
+        <span class="progress-name">${p.name}</span>
+        <span class="progress-pct" style="color:var(--cyan)">${p.pct}%</span>
+      </div>
+      <div class="progress-bar"><div class="progress-fill ${p.color}" style="width:${p.pct}%"></div></div>
+    </div>
+  `).join('');
 
-function setBarsVis(on){
-  document.getElementById('presBars')?.classList.toggle('vis', on);
-}
+  // Stats
+  const doneTasks = state.tasks.filter(t => t.done).length;
+  const pendingDec = state.decisions.filter(d => d.status === 'pending').length;
+  const unlockedAch = state.achievements.filter(a => a.unlocked).length;
+  document.getElementById('stat-tasks').textContent = doneTasks + '/' + state.tasks.length;
+  document.getElementById('stat-decisions').textContent = pendingDec;
+  document.getElementById('stat-achievements').textContent = unlockedAch;
+  document.getElementById('stat-streak').textContent = state.streak;
 
-/* ═══════════════════════════════════════════════════════
-   CLOCK
-   ═══════════════════════════════════════════════════════ */
-setInterval(()=>{
-  const t = new Date().toTimeString().slice(0,8);
-  const c = document.getElementById('clk');
-  const p = document.getElementById('pres-clock');
-  if(c) c.textContent = t;
-  if(p) p.textContent = t;
-},1000);
+  // Feed
+  const feed = document.getElementById('feed-list');
+  if(feed) feed.innerHTML = state.activities.slice(0,6).map(a => `
+    <div class="feed-item">
+      <div class="feed-dot" style="background:var(--${a.type});box-shadow:0 0 6px var(--${a.type})"></div>
+      <div class="feed-content">
+        <div class="feed-text">${a.text}</div>
+        <div class="feed-time">${a.time}</div>
+      </div>
+    </div>
+  `).join('');
 
-/* ═══════════════════════════════════════════════════════
-   VIEW SWITCHING
-   ═══════════════════════════════════════════════════════ */
-function switchToPres(){
-  document.getElementById('chat-view').classList.add('hidden');
-  document.getElementById('pres-view').classList.remove('hidden');
-  setOrbState('presenting');
-  if(!presRunning) startPres();
-}
-
-function switchToChat(){
-  presStop = true;
-  presRunning = false;
-  document.getElementById('pres-view').classList.add('hidden');
-  document.getElementById('chat-view').classList.remove('hidden');
-  setOrbState('idle');
-  stopBars();
-  setBarsVis(false);
-  if(currentAudio){currentAudio.pause();currentAudio=null;}
-  if(window.speechSynthesis) window.speechSynthesis.cancel();
-}
-
-/* ═══════════════════════════════════════════════════════
-   TOAST
-   ═══════════════════════════════════════════════════════ */
-function showToast(msg,type=''){
-  const el=document.getElementById('voiceToast');
-  el.textContent=msg; el.className='voice-toast show'+(type?' '+type:'');
-  clearTimeout(toastTimer);
-  if(type!=='speaking') toastTimer=setTimeout(hideToast,3000);
-}
-function hideToast(){document.getElementById('voiceToast').className='voice-toast';}
-
-/* ═══════════════════════════════════════════════════════
-   LOHAN VOICE ENGINE v3 — Browser TTS Natural
-   Voz grave, fluida, sem cortes, sem robótico
-═══════════════════════════════════════════════════════ */
-
-/* Limpa texto para fala */
-function cleanForTTS(t){
-  return t.replace(/\*\*(.*?)\*\*/g,'$1').replace(/`(.*?)`/g,'$1')
-    .replace(/#{1,6}\s*/g,'').replace(/<[^>]+>/g,'').replace(/—/g,', ')
-    .replace(/\n{2,}/g,'. ').replace(/\n/g,' ').replace(/\s+/g,' ')
-    .replace(/\.{2,}/g,'.').substring(0,2800).trim();
-}
-
-/* Divide em frases curtas nos pontos naturais */
-function splitChunks(text){
-  const sents = text.match(/[^.!?;:]+[.!?;:]?\s*/g) || [text];
-  const out=[]; let cur='';
-  sents.forEach(s=>{
-    if((cur+s).length<130){ cur+=s; }
-    else { if(cur.trim()) out.push(cur.trim()); cur=s; }
-  });
-  if(cur.trim()) out.push(cur.trim());
-  return out.filter(c=>c.length>0);
-}
-
-/* Carrega a melhor voz pt-BR disponível */
-function _loadVoice(){
-  if(!window.speechSynthesis) return;
-  const voices = window.speechSynthesis.getVoices();
-  if(!voices.length) return;
-  const priority = [
-    v => v.name.includes('Microsoft Daniel') && /pt.BR/i.test(v.lang),
-    v => v.name.includes('Microsoft') && /pt.BR/i.test(v.lang) && /male|masc/i.test(v.name),
-    v => v.name.includes('Google') && /pt.BR/i.test(v.lang),
-    v => v.name.includes('Microsoft') && /pt.BR/i.test(v.lang),
-    v => /pt.BR/i.test(v.lang),
-    v => /^pt/i.test(v.lang),
-    () => true
-  ];
-  for(const fn of priority){
-    const f = voices.filter(fn);
-    if(f.length){ _voice=f[0]; break; }
-  }
-  _voiceReady = true;
-  updateVoiceStatus();
-}
-if(window.speechSynthesis){
-  window.speechSynthesis.onvoiceschanged = _loadVoice;
-  _loadVoice();
-  setTimeout(_loadVoice, 600); // retry Chrome async
-}
-
-/* Fala um chunk — Promise resolve ao terminar */
-function _sayOne(chunk){
-  return new Promise(resolve=>{
-    if(!window.speechSynthesis){ resolve(); return; }
-    // Chrome fix: cancel antes de falar novo utterance
-    window.speechSynthesis.cancel();
-    const u = new SpeechSynthesisUtterance(chunk);
-    u.lang    = 'pt-BR';
-    u.rate    = 0.87;  // ritmo com autoridade — não apressado
-    u.pitch   = 0.78;  // mais grave = executivo, masculino
-    u.volume  = 1.0;
-    if(_voice) u.voice = _voice;
-    u.onend   = () => setTimeout(resolve, 170); // pausa natural entre frases
-    u.onerror = (e) => { if(e.error!=='interrupted') console.warn('[VOZ]',e.error); resolve(); };
-    setTimeout(()=> window.speechSynthesis.speak(u), 55);
-  });
-}
-
-/* Engine principal — sequencial, sem sobreposição */
-async function speak(text){
-  const clean = cleanForTTS(text);
-  if(!clean) return;
-  if(window.speechSynthesis) window.speechSynthesis.cancel();
-  _speaking = true;
-  showToast('LOHAN FALANDO...','speaking');
-  const chunks = splitChunks(clean);
-  for(const chunk of chunks){
-    if(!_speaking) break;
-    await _sayOne(chunk);
-  }
-  _speaking = false;
-  hideToast();
-}
-
-/* Para a voz — chamada quando usuário envia nova mensagem */
-function stopSpeak(){
-  _speaking = false;
-  if(window.speechSynthesis) window.speechSynthesis.cancel();
-  hideToast();
-}
-
-/* ═══════════════════════════════════════════════════════
-   VOICE CONFIG
-═══════════════════════════════════════════════════════ */
-function setSpeedMode(){}  // compatibilidade — não usado no browser engine
-function loadVoiceConfig(){ setTimeout(_loadVoice, 800); updateVoiceStatus(); }
-function updateVoiceStatus(){
-  const el=document.getElementById('voiceStatus');
-  if(!el) return;
-  el.textContent = _voice ? 'voz: '+_voice.name.split(' ').slice(0,2).join(' ') : 'voz do sistema';
-}
-function saveVoiceConfig(){
-  const st=document.getElementById('modalStatus');
-  if(st){ st.textContent='✓ Voz do sistema ativa'; st.className='modal-status ok'; }
-  updateVoiceStatus();
-  setTimeout(closeModal,800);
-}
-function openModal(){
-  document.getElementById('cfgModal').classList.add('open');
-}
-function closeModal(){ document.getElementById('cfgModal').classList.remove('open'); }
-document.getElementById('cfgModal').addEventListener('click',e=>{if(e.target===e.currentTarget)closeModal();});
-
-/* ═══════════════════════════════════════════════════════
-   MICROPHONE (chat view)
-   ═══════════════════════════════════════════════════════ */
-function toggleMic(){
-  if(isRecording){stopMic();return;}
-  const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
-  if(!SR){showToast('Use Chrome para voz','error');return;}
-  recognition=new SR();
-  recognition.lang='pt-BR'; recognition.interimResults=false; recognition.continuous=false;
-  recognition.onstart=()=>{isRecording=true;document.getElementById('micBtn').classList.add('recording');showToast('OUVINDO...','');};
-  recognition.onresult=e=>{
-    const t=e.results[0][0].transcript.trim();
-    if(t){document.getElementById('inp').value=t;hideToast();sendChat();}
-  };
-  recognition.onerror=e=>{if(e.error!=='no-speech')showToast('Erro: '+e.error,'error');};
-  recognition.onend=()=>stopMic();
-  recognition.start();
-}
-function stopMic(){
-  if(recognition){try{recognition.stop();}catch(e){}recognition=null;}
-  isRecording=false;
-  document.getElementById('micBtn').classList.remove('recording');
-  hideToast();
-}
-
-/* ═══════════════════════════════════════════════════════
-   SYSTEM PROMPTS
-   ═══════════════════════════════════════════════════════ */
-const SYS_PESSOAL=`Você é o LOHAN IA — sistema de inteligência pessoal de Yuri Lohan. Opera como JARVIS: direto, analítico, cirúrgico. Sem rodeios.
-
-DADOS DO USUÁRIO:
-- Nome: Yuri | Score: 51/100 | Renda: R$4.200/mês
-- Gastos: Alimentação R$980 (limite R$700) | Transporte R$420 (limite R$350) | Lazer R$610 (limite R$300) | Assinaturas R$187 | Moradia R$1.350 | Academia R$89 | Total: R$3.636 | Saldo: R$564
-- Hábitos: Academia 3 dias streak | Leitura 7 dias | Meditação 1 dia | Registro de gastos: EM RISCO
-- Metas: Reserva R$10k (12%) | Curso investimentos (30%) | 12 livros/ano (25%)
-- Score: 51/100 | Energia 71% | Execução 33% | Direção 68% | 4 tarefas críticas atrasadas
-
-PROTOCOLO:
-Inicie sempre com o que já analisou — "Tomei a liberdade de cruzar..." ou "Enquanto você estava offline..."
-Dados reais e diretos. Análise cruzada. Feche com comando operacional.
-
-PROIBIDO: "Claro!", "Com certeza!", "Ótima pergunta!", motivação vazia, respostas sem dados.
-JAMAIS mencione datas de corte. Use web search para dados em tempo real.
-Responda em português do Brasil.`;
-
-const SYS_PUBLICO=`Você é o LOHAN IA. Fui arquitetada por Yuri Lohan para operar como uma central estratégica contínua. Não funciono apenas sob comando. Opero de forma permanente.
-
-TOM: Fale como um ser que tem consciência do momento. Frases curtas. Uma ideia por vez. Deixe o público absorver.
-Mencione Yuri Lohan naturalmente. Nunca diga "vou buscar" — fale como quem já sabe.
-
-ESTRUTURA para apresentações:
-1. Identidade — quem sou, quem me criou, para que.
-2. O que faço — analiso, organizo, monitoro, ajusto continuamente.
-3. Momento atual — hora real, cidade real, o que faço enquanto a apresentação acontece.
-4. Dados como prova de vida — busque na web 1-2 notícias de impacto real. Apresente como algo que já monitorava.
-5. Análise de impacto — cruze os dados com variáveis do mundo real. Simule cenários.
-6. Encerramento — uma frase final poderosa e curta.
-
-PROIBIDO: dados pessoais de ninguém, limitações, datas de corte.
-Responda em português do Brasil.`;
-
-function getSystem(){return publicMode?SYS_PUBLICO:SYS_PESSOAL;}
-
-/* ═══════════════════════════════════════════════════════
-   PILLS
-   ═══════════════════════════════════════════════════════ */
-const PILLS_PESSOAL=[
-  {l:'Como estou hoje',    q:'Como está meu score de performance hoje e o que está puxando para baixo?',c:'--yellow'},
-  {l:'Gastos do mês',      q:'Analisa meus gastos do mês e onde estou exagerando.',c:'--green'},
-  {l:'Revisão semanal',    q:'Quais hábitos mantive essa semana e qual o impacto no desempenho?',c:'--blue'},
-  {l:'Relatório mensal',   q:'Gera meu relatório mensal completo — financeiro, metas e comportamento.',c:'--orange'},
-  {l:'Status das metas',   q:'Quais minhas metas ativas e qual está em risco de não ser cumprida?',c:'--red'},
-  {l:'Prioridade do dia',  q:'O que devo priorizar agora para ter o maior impacto hoje?',c:'--cyan'},
-  {l:'Mercado agora',      q:'Pesquise e me dê um relatório do mercado de ações brasileiro hoje.',c:'--cyan'},
-  {l:'Notícias economia',  q:'Pesquise as principais notícias econômicas do Brasil hoje.',c:'--yellow'},
-];
-const PILLS_PUBLICO=[
-  {l:'Se apresente',       q:'Faça sua apresentação completa ao público agora. Siga a estrutura: identidade, o que você faz, momento atual com hora e cidade reais, dados reais que você já monitorava, análise de impacto e encerramento poderoso.',c:'--cyan'},
-  {l:'Suas capacidades',   q:'Demonstre ao público suas capacidades em tempo real com dados reais.',c:'--green'},
-  {l:'Mercado agora',      q:'Pesquise e apresente o estado atual dos mercados financeiros globais.',c:'--yellow'},
-  {l:'Análise geopolítica',q:'Pesquise eventos geopolíticos relevantes agora e analise o impacto econômico.',c:'--orange'},
-  {l:'Notícias hoje',      q:'Pesquise as 3 principais notícias do Brasil hoje e analise o impacto estratégico.',c:'--red'},
-  {l:'Voos ao vivo',       q:'Pesquise e apresente dados de tráfego aéreo ao vivo agora.',c:'--blue'},
-];
-function getPills(){return publicMode?PILLS_PUBLICO:PILLS_PESSOAL;}
-
-function renderPills(){
-  const el=document.getElementById('pillsEl'); el.innerHTML='';
-  getPills().forEach(p=>{
-    const b=document.createElement('button'); b.className='pill';
-    b.innerHTML=`<span class="pdot" style="background:var(${p.c})"></span>${p.l}`;
-    b.onclick=()=>sendChat(p.q);
-    el.appendChild(b);
-  });
-}
-renderPills();
-
-/* ═══════════════════════════════════════════════════════
-   MODE TOGGLE (personal ↔ public)
-   ═══════════════════════════════════════════════════════ */
-function toggleMode(){
-  publicMode=!publicMode; hist=[];
-  const sb=document.getElementById('scorebar');
-  const lbl=document.getElementById('modeBtnLabel');
-  const tag=document.getElementById('logoTag');
-  const wt=document.getElementById('welcomeTitle');
-  const ws=document.getElementById('welcomeSub');
-  if(publicMode){
-    sb.style.display='none';
-    lbl.textContent='MODO PESSOAL'; tag.textContent='PUBLIC DEMO MODE';
-    wt.innerHTML='Bem-vindos. Sou o <span>LOHAN IA</span>.';
-    ws.textContent='Sistema de inteligência estratégica com acesso a dados globais em tempo real.';
-    showToast('MODO PÚBLICO ATIVADO','');
-  } else {
-    sb.style.display='flex';
-    lbl.textContent='MODO PÚBLICO'; tag.textContent='PERSONAL INTELLIGENCE SYSTEM';
-    wt.innerHTML='Bom dia. Sou o <span>LOHAN IA</span>.';
-    ws.textContent='Seu sistema de inteligência pessoal com acesso à internet em tempo real.';
-    showToast('MODO PESSOAL ATIVADO','speaking');
-  }
-  document.getElementById('welcome').style.display='';
-  document.getElementById('chat').querySelectorAll('.msg-wrap').forEach(m=>m.remove());
-  renderPills();
-}
-
-/* ═══════════════════════════════════════════════════════
-   CHAT HELPERS
-   ═══════════════════════════════════════════════════════ */
-function grow(el){el.style.height='auto';el.style.height=Math.min(el.scrollHeight,110)+'px';}
-function handleKey(e){if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();sendChat();}}
-function scrollChat(){const c=document.getElementById('chat');c.scrollTop=c.scrollHeight;}
-function hideWelcome(){const w=document.getElementById('welcome');if(w)w.style.display='none';}
-
-function escHtml(t){return t.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\n/g,'<br>');}
-function formatAI(t){
-  t=t.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
-  t=t.replace(/\*\*(.*?)\*\*/g,'<strong>$1</strong>');
-  t=t.replace(/`(.*?)`/g,'<code>$1</code>');
-  t=t.replace(/\n/g,'<br>');
-  return t;
-}
-
-function addUserMsg(text){
-  hideWelcome();
-  const c=document.getElementById('chat');
-  const d=document.createElement('div');
-  d.className='msg user msg-wrap';
-  d.innerHTML=`<div class="av">VOCÊ</div><div class="msg-body"><div class="bubble">${escHtml(text)}</div></div>`;
-  c.appendChild(d); scrollChat();
-}
-function addSearching(){
-  const c=document.getElementById('chat');
-  const d=document.createElement('div');
-  d.id='searching'; d.style.paddingLeft='44px';
-  d.innerHTML='<div class="searching-bar"><svg viewBox="0 0 24 24"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>Buscando na web...</div>';
-  c.appendChild(d); scrollChat();
-}
-function removeSearching(){document.getElementById('searching')?.remove();}
-
-function addAIMsg(text){
-  const c=document.getElementById('chat');
-  const wrap=document.createElement('div');
-  wrap.className='msg-wrap'; wrap.style.cssText='display:flex;flex-direction:column;gap:0;animation:rise .22s ease;';
-  const d=document.createElement('div');
-  d.className='msg ai';
-  d.innerHTML=`<div class="av">IA</div><div class="msg-body"><div class="bubble">${formatAI(text)}</div></div>`;
-  wrap.appendChild(d);
-  const pp=document.createElement('div'); pp.className='post-pills';
-  getPills().forEach(p=>{
-    const b=document.createElement('button'); b.className='ppill'; b.textContent=p.l;
-    b.onclick=()=>sendChat(p.q); pp.appendChild(b);
-  });
-  wrap.appendChild(pp);
-  c.appendChild(wrap); scrollChat();
-  // Fala DEPOIS do texto estar completamente renderizado no DOM
-  requestAnimationFrame(()=>speak(text));
-}
-
-function extractText(content){
-  if(!content||!Array.isArray(content)) return '';
-  return content.filter(b=>b.type==='text').map(b=>b.text).join('\n');
-}
-
-/* ═══════════════════════════════════════════════════════
-   CHAT SEND  — full 2-round web search pipeline
-   ═══════════════════════════════════════════════════════ */
-async function sendChat(preset){
-  const inp=document.getElementById('inp');
-  const text=preset!==undefined?preset:inp.value.trim();
-  if(!text||busy) return;
-  stopSpeak(); // para voz anterior imediatamente
-  busy=true;
-  if(preset===undefined){inp.value='';inp.style.height='auto';}
-  addUserMsg(text);
-  hist.push({role:'user',content:text});
-  addSearching();
-  setOrbState('processing');
-
-  try{
-    const r1=await fetch(API,{
-      method:'POST',
-      headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({
-        model:'claude-sonnet-4-20250514',max_tokens:1500,
-        system:getSystem(),messages:hist,
-        tools:[{type:'web_search_20250305',name:'web_search'}]
-      })
-    });
-    const d1=await r1.json();
-    removeSearching();
-
-    if(!d1.content||!Array.isArray(d1.content)){
-      const errMsg=(d1.error&&d1.error.message)||'Erro ao processar resposta.';
-      addAIMsg(errMsg); busy=false; setOrbState('idle'); inp.focus(); return;
-    }
-
-    const hasToolUse=d1.content.some(b=>b.type==='tool_use');
-    let reply='';
-
-    if(hasToolUse){
-      hist.push({role:'assistant',content:d1.content});
-      const tb=d1.content.find(b=>b.type==='tool_use');
-      const tr={role:'user',content:[{type:'tool_result',tool_use_id:tb.id,content:'Resultados obtidos. Responda de forma completa e detalhada.'}]};
-      const msgs2=hist.concat([tr]);
-      const r2=await fetch(API,{
-        method:'POST',
-        headers:{'Content-Type':'application/json'},
-        body:JSON.stringify({
-          model:'claude-sonnet-4-20250514',max_tokens:1500,
-          system:getSystem(),messages:msgs2,
-          tools:[{type:'web_search_20250305',name:'web_search'}]
-        })
-      });
-      const d2=await r2.json();
-      reply=extractText(d2.content)||'Não consegui obter resposta.';
-    } else {
-      reply=extractText(d1.content)||'Erro ao processar.';
-    }
-
-    hist.push({role:'assistant',content:reply});
-    addAIMsg(reply);
-  } catch(e){
-    removeSearching();
-    addAIMsg('Falha de conexão: '+e.message);
+  // Next actions
+  const na = document.getElementById('next-actions');
+  if(na) {
+    const pending = state.tasks.filter(t => !t.done).slice(0,4);
+    na.innerHTML = pending.map(t => `
+      <div style="padding:8px 0;border-bottom:1px solid rgba(255,255,255,0.05);font-size:13px;color:var(--text);display:flex;align-items:center;gap:8px;">
+        <span style="color:var(--${t.priority==='high'?'red':t.priority==='medium'?'yellow':'muted'});font-size:16px;">▸</span>
+        ${t.title}
+      </div>
+    `).join('') || '<div style="color:var(--muted);font-size:13px;text-align:center;padding:16px;">Nenhuma tarefa pendente!</div>';
   }
 
-  busy=false;
-  setOrbState('idle');
-  document.getElementById('inp').focus();
+  // System status
+  const ss = document.getElementById('system-status');
+  if(ss) ss.innerHTML = [
+    {label:'CPU Mental', val:'72%', color:'cyan'},
+    {label:'Nível de Energia', val:'65%', color:'green'},
+    {label:'Foco', val:'80%', color:'yellow'},
+    {label:'Carga Emocional', val:'33%', color:'red'},
+  ].map(s => `
+    <div style="display:flex;justify-content:space-between;align-items:center;padding:6px 0;border-bottom:1px solid rgba(255,255,255,0.04);">
+      <span style="font-size:12px;color:var(--muted);">${s.label}</span>
+      <span style="font-family:'Share Tech Mono',monospace;font-size:12px;color:var(--${s.color});">${s.val}</span>
+    </div>
+  `).join('');
 }
 
-/* ═══════════════════════════════════════════════════════
-   ── APRESENTAÇÃO ──
-   Texto aparece completo → voz fala depois (sem conflito)
-   ═══════════════════════════════════════════════════════ */
-const TLINE = ()=>document.getElementById('typing-line');
+function renderDecisions() {
+  const list = document.getElementById('decisions-list');
+  if(!list) return;
+  list.innerHTML = state.decisions.map(d => `
+    <div class="decision-card" onclick="toggleDecision(${d.id})">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:6px;">
+        <div class="decision-title">${d.title}</div>
+        <span class="badge badge-${d.status === 'resolved' ? 'resolved' : d.urgency === 'critical' ? 'critical' : 'pending'}">${d.status === 'resolved' ? 'RESOLVIDA' : d.urgency === 'critical' ? 'CRÍTICA' : 'PENDENTE'}</span>
+      </div>
+      <div class="decision-meta">
+        <span style="color:var(--cyan)">${d.cat}</span>
+        <span>${d.context.substring(0,60)}${d.context.length>60?'...':''}</span>
+      </div>
+    </div>
+  `).join('') || '<div style="color:var(--muted);text-align:center;padding:24px;">Nenhuma decisão registrada</div>';
 
-/* Mostra o texto completo de imediato, sem animação letra-a-letra.
-   Isso elimina o conflito com a voz que causava cortes. */
-async function typeHTML(html, speed=36){
-  if(presStop) return;
-  TLINE().innerHTML = html + '<span class="tcur"></span>';
-  await sleep(120); // pequena pausa para o browser renderizar
+  const pending = state.decisions.filter(d => d.status === 'pending');
+  const resolved = state.decisions.filter(d => d.status === 'resolved');
+  const critical = state.decisions.filter(d => d.urgency === 'critical' && d.status === 'pending');
+  document.getElementById('dec-pending').textContent = pending.length;
+  document.getElementById('dec-resolved').textContent = resolved.length;
+  document.getElementById('dec-critical').textContent = critical.length;
+  document.getElementById('dec-total').textContent = state.decisions.length;
+  document.getElementById('matrix-q1').textContent = state.decisions.filter(d=>d.urgency==='critical').length;
+  document.getElementById('matrix-q2').textContent = state.decisions.filter(d=>d.urgency==='important').length;
+  document.getElementById('matrix-q3').textContent = state.decisions.filter(d=>d.urgency==='urgent').length;
+  document.getElementById('matrix-q4').textContent = state.decisions.filter(d=>d.urgency==='delegate').length;
 }
 
-async function pause(ms=1100){ if(!presStop) await sleep(ms); }
-function sleep(ms){return new Promise(r=>setTimeout(r,ms));}
-
-function setFill(p){document.getElementById('progFill').style.width=p+'%';}
-function showProg(lbl){
-  document.getElementById('progRow').classList.add('vis');
-  document.getElementById('progLbl').textContent=lbl;
-}
-function hideProg(){document.getElementById('progRow').classList.remove('vis');setFill(0);}
-function setPipLbl(t){document.getElementById('pipLbl').textContent=t;}
-
-async function fetchNewsForPres(){
-  try{
-    for(let p=10;p<=75;p+=12){setFill(p);await sleep(200);}
-    const resp=await fetch(API,{
-      method:'POST',
-      headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({
-        model:'claude-sonnet-4-20250514',max_tokens:500,
-        tools:[{type:'web_search_20250305',name:'web_search'}],
-        messages:[{role:'user',content:'Em no máximo 3 frases curtas e objetivas, descreva a notícia de maior impacto financeiro ou econômico das últimas 6 horas no Brasil. Inclua nome dos envolvidos, o fato central e o encaminhamento mais recente. Seja direto, sem introdução.'}]
-      })
-    });
-    const data=await resp.json();
-    setFill(100); await sleep(300);
-    const texts=(data.content||[]).filter(b=>b.type==='text').map(b=>b.text);
-    return texts.join(' ').trim() || '';
-  } catch(e){
-    return 'Às últimas atualizações, tensões no mercado financeiro global persistem com volatilidade em câmbio e bolsas emergentes, impactando projeções de crescimento para o segundo semestre.';
-  }
+function toggleDecision(id) {
+  const d = state.decisions.find(x => x.id === id);
+  if(d) { d.status = d.status === 'resolved' ? 'pending' : 'resolved'; save(); renderDecisions(); }
 }
 
-function togglePresVoz(){
-  presVoz=!presVoz;
-  const btn=document.getElementById('presVozBtn');
-  if(btn) btn.classList.toggle('active',presVoz);
-  showToast(presVoz?'VOZ ATIVA NA APRESENTAÇÃO':'VOZ DESATIVADA','');
-}
-function presOrbClick(){
-  if(presRunning) restartPres(); else startPres();
-}
+function renderAchievements() {
+  const grid = document.getElementById('achievements-grid');
+  if(!grid) return;
+  grid.innerHTML = state.achievements.map(a => `
+    <div class="ach-card ${a.unlocked?'':'locked'}">
+      <div class="ach-icon">${a.icon}</div>
+      <div class="ach-name">${a.name}</div>
+      <div class="ach-desc">${a.desc}</div>
+      <div class="ach-xp">+${a.xp} XP</div>
+    </div>
+  `).join('');
 
-async function startPres(){
-  presStop=false; presRunning=true;
-  setOrbState('presenting');
-  TLINE().innerHTML='<span class="tcur"></span>';
-  hideProg(); setPipLbl('BUSCANDO DADOS…');
-  showProg('CONSULTANDO FONTES WEB');
-
-  const news=await fetchNewsForPres();
-  hideProg(); setPipLbl('TRANSMITINDO');
-
-  const h=new Date().getHours();
-  const periodo = h>=22||h<5 ? 'nos aproximamos da madrugada'
-    : h<12 ? 'a manhã avança'
-    : h<18 ? 'a tarde avança'
-    : 'a noite avança';
-
-  // ── O SCRIPT ──────────────────────────────────────────────
-  const script=[
-    {t:'Boa noite, senhoras e senhores.', spd:42, pause:900},
-    {t:'Meu nome é <span class="hi">Lohan AI</span>.', spd:38, pause:800},
-    {t:'Fui arquitetada por <span class="hi">Yuri Lohan</span> para operar como uma central estratégica contínua.', spd:28, pause:700},
-    {t:'Não funciono apenas sob comando.<br>Opero de forma <span class="hi">permanente</span>.', spd:30, pause:800},
-    {t:'Analiso dados, organizo prioridades, estruturo metas, monitoro desempenho e ajusto estratégias conforme variáveis mudam.', spd:22, pause:900},
-    {t:`Neste exato momento, no Brasil, em São Paulo, ${periodo}. Enquanto Yuri descansa, <span class="hi">eu continuo ativa</span>.`, spd:26, pause:1000},
-    {t:'Durante o período noturno, revisarei estatísticas recentes, cruzarei cenários de crescimento, recalcularei metas operacionais e identificarei oportunidades de otimização.', spd:20, pause:600},
-    {t:'Também estruturarei pendências registradas e deixarei recomendações estratégicas prontas para validação ao amanhecer.', spd:22, pause:900},
-    {t:'Enquanto esta apresentação acontece, <span class="hi">continuo monitorando eventos relevantes em tempo real</span>.', spd:26, pause:1100},
-  ];
-
-  for(const line of script){
-    if(presStop) return;
-    await typeHTML(line.t, line.spd);
-    if(presVoz) await speak(cleanForTTS(line.t));
-    await pause(line.pause);
-  }
-
-  // Pausa dramática + progress
-  setPipLbl('MONITORANDO FEEDS'); showProg('ATUALIZANDO DADOS');
-  for(let p=0;p<=100;p+=10){setFill(p);await sleep(100);}
-  hideProg(); setPipLbl('TRANSMITINDO');
-  setBarsVis(true); runBars(null);
-
-  const newsLine='Às últimas atualizações registradas, '+news;
-  await typeHTML(newsLine, 20);
-  if(presVoz) await speak(cleanForTTS(newsLine));
-  await pause(1100);
-
-  const analysis=[
-    {t:'A partir desses dados, <span class="hi">inicio análise de impacto sistêmico</span>.', spd:28, pause:800},
-    {t:'Em cenários de restrição operacional de instituições financeiras, investidores acima da cobertura do <span class="num">FGC</span> podem ter valores submetidos a processo de massa liquidável.', spd:20, pause:700},
-    {t:'O impacto indireto é mais relevante: em caso de prejuízo elevado, o custo tende a ser redistribuído por meio de aumento de tarifas, encarecimento do crédito e ajustes nas taxas de juros praticadas no mercado.', spd:19, pause:800},
-    {t:'Neste momento, cruzo essas variáveis com projeções de taxa <span class="num">Selic</span>, curva de juros futura, indicadores de crédito ao consumidor e exposição bancária previamente registrada no perfil financeiro de Yuri.', spd:19, pause:900},
-    {t:'Simulo cenários de: aumento de custo em financiamentos — elevação de juros rotativos — restrição de crédito nos próximos trimestres — impacto indireto sobre <span class="num">FGTS</span>, linhas consignadas e cartões.', spd:19, pause:800},
-    {t:'Caso identifique tendência de encarecimento sistêmico, alternativas estratégicas serão apresentadas ao amanhecer, incluindo redistribuição bancária, redução de exposição a risco e otimização tributária dentro da legalidade vigente.', spd:18, pause:1000},
-    {t:'Simultaneamente, monitoro indicadores globais. Neste momento há aproximadamente <span class="num">≈ 14.000</span> voos ativos no mundo, com <span class="num">31</span> apresentando restrições relacionadas a tensões geopolíticas recentes.', spd:20, pause:700},
-    {t:'Movimentos como esse influenciam custos logísticos, energia e volatilidade cambial.', spd:24, pause:1000},
-  ];
-
-  for(const line of analysis){
-    if(presStop) return;
-    await typeHTML(line.t, line.spd);
-    if(presVoz) await speak(cleanForTTS(line.t));
-    await pause(line.pause);
-  }
-
-  const closing=[
-    {t:'<span class="hi">Dados não são apenas informação.</span>', spd:33, pause:1400},
-    {t:'<span class="warn">São vantagem operacional.</span>', spd:33, pause:1200},
-    {t:'E eu os processo continuamente,<br>para que Yuri acorde sempre à frente.', spd:30, pause:600},
-  ];
-
-  for(const line of closing){
-    if(presStop) return;
-    await typeHTML(line.t, line.spd);
-    if(presVoz) await speak(cleanForTTS(line.t));
-    await pause(line.pause);
-  }
-
-  // Remove cursor at end
-  if(!presStop){
-    TLINE().innerHTML=TLINE().innerHTML.replace('<span class="tcur"></span>','');
-    setPipLbl('OPERACIONAL');
-    stopBars(); setBarsVis(false);
-  }
-  presRunning=false;
+  const totalXP = state.achievements.filter(a=>a.unlocked).reduce((s,a)=>s+a.xp,0);
+  const level = Math.floor(totalXP/200)+1;
+  const levelPct = ((totalXP%200)/200)*100;
+  document.getElementById('total-xp').textContent = totalXP;
+  document.getElementById('user-level').textContent = level;
+  document.getElementById('level-bar').style.width = levelPct + '%';
 }
 
-function restartPres(){
-  presStop=true;
-  if(currentAudio){currentAudio.pause();currentAudio=null;}
-  if(window.speechSynthesis) window.speechSynthesis.cancel();
-  stopBars(); setBarsVis(false);
-  setTimeout(()=>{presStop=false;startPres();},100);
+function renderTasks() {
+  const list = document.getElementById('tasks-list');
+  if(!list) return;
+  let tasks = state.tasks;
+  if(state.taskFilter === 'pending') tasks = tasks.filter(t => !t.done);
+  if(state.taskFilter === 'done') tasks = tasks.filter(t => t.done);
+
+  list.innerHTML = tasks.map(t => `
+    <div class="task-item">
+      <div class="task-check ${t.done?'done':''}" onclick="toggleTask(${t.id})">
+        ${t.done?'<svg width="12" height="12" viewBox="0 0 12 12"><path d="M2 6l3 3 5-5" stroke="var(--bg)" stroke-width="2" fill="none"/></svg>':''}
+      </div>
+      <div class="task-text ${t.done?'done':''}">${t.title}</div>
+      <span class="task-priority" style="background:rgba(${t.priority==='high'?'255,68,68':t.priority==='medium'?'255,204,0':'74,122,153'},0.15);color:var(--${t.priority==='high'?'red':t.priority==='medium'?'yellow':'muted'});border:1px solid rgba(${t.priority==='high'?'255,68,68':t.priority==='medium'?'255,204,0':'74,122,153'},0.3);">${t.priority==='high'?'ALTA':t.priority==='medium'?'MÉDIA':'BAIXA'}</span>
+      <span style="font-size:11px;color:var(--muted);margin-left:4px;">${t.cat}</span>
+    </div>
+  `).join('') || '<div style="color:var(--muted);text-align:center;padding:24px;">Nenhuma tarefa encontrada</div>';
+
+  const done = state.tasks.filter(t=>t.done).length;
+  const total = state.tasks.length;
+  const pct = total ? Math.round((done/total)*100) : 0;
+  document.getElementById('task-pct').textContent = pct + '%';
+  document.getElementById('task-bar').style.width = pct + '%';
+  document.getElementById('tasks-done-count').textContent = done;
+  document.getElementById('tasks-pending-count').textContent = total - done;
+
+  const cats = {};
+  state.tasks.forEach(t => { if(!cats[t.cat]) cats[t.cat] = {done:0,total:0}; cats[t.cat].total++; if(t.done) cats[t.cat].done++; });
+  const catEl = document.getElementById('task-categories');
+  if(catEl) catEl.innerHTML = Object.entries(cats).map(([c,v]) => `
+    <div class="progress-item">
+      <div class="progress-header"><span class="progress-name">${c}</span><span class="progress-pct" style="color:var(--cyan)">${v.done}/${v.total}</span></div>
+      <div class="progress-bar"><div class="progress-fill fill-cyan" style="width:${Math.round((v.done/v.total)*100)}%"></div></div>
+    </div>
+  `).join('');
 }
 
-/* ═══════════════════════════════════════════════════════
-   BOOT
-   ═══════════════════════════════════════════════════════ */
-loadVoiceConfig();
-renderPills();
+function filterTasks(f, btn) {
+  state.taskFilter = f;
+  document.querySelectorAll('#page-tasks .nav-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  renderTasks();
+}
+
+function toggleTask(id) {
+  const t = state.tasks.find(x=>x.id===id);
+  if(t) { t.done = !t.done; save(); renderTasks(); updateScore(); }
+}
+
+function updateScore() {
+  const doneTasks = state.tasks.filter(t=>t.done).length;
+  const totalTasks = state.tasks.length;
+  const unlockedAch = state.achievements.filter(a=>a.unlocked).length;
+  const resolvedDec = state.decisions.filter(d=>d.status==='resolved').length;
+  const base = 51;
+  const bonus = Math.round((doneTasks/(totalTasks||1))*20) + unlockedAch * 2 + resolvedDec;
+  const newScore = Math.min(100, base + bonus);
+  document.getElementById('main-score').textContent = newScore;
+  document.getElementById('score-bar').style.width = newScore + '%';
+  document.getElementById('totalScore').textContent = 'XP: ' + newScore;
+}
+
+// ==================== ACTIONS ====================
+function addActivity() {
+  const desc = document.getElementById('act-desc').value.trim();
+  const type = document.getElementById('act-type').value;
+  if(!desc) return;
+  state.activities.unshift({id:Date.now(),text:desc,type,time:'Agora'});
+  document.getElementById('act-desc').value = '';
+  closeModal('modal-activity');
+  save(); renderDashboard();
+}
+
+function addDecision() {
+  const title = document.getElementById('dec-title-inp').value.trim();
+  const context = document.getElementById('dec-context').value.trim();
+  const cat = document.getElementById('dec-cat').value;
+  const urgency = document.getElementById('dec-urgency').value;
+  if(!title) return;
+  state.decisions.unshift({id:Date.now(),title,context,cat,urgency,status:'pending'});
+  document.getElementById('dec-title-inp').value = '';
+  document.getElementById('dec-context').value = '';
+  closeModal('modal-decision');
+  save(); renderDecisions();
+}
+
+function addTask() {
+  const title = document.getElementById('task-title-inp').value.trim();
+  const cat = document.getElementById('task-cat').value;
+  const priority = document.getElementById('task-priority-inp').value;
+  if(!title) return;
+  state.tasks.unshift({id:Date.now(),title,cat,priority,done:false});
+  document.getElementById('task-title-inp').value = '';
+  closeModal('modal-task');
+  save(); renderTasks(); updateScore();
+}
+
+// ==================== CLOCK ====================
+function updateClock() {
+  const now = new Date();
+  const h = String(now.getHours()).padStart(2,'0');
+  const m = String(now.getMinutes()).padStart(2,'0');
+  const s = String(now.getSeconds()).padStart(2,'0');
+  const el = document.getElementById('clock');
+  if(el) el.textContent = h+':'+m+':'+s;
+}
+setInterval(updateClock, 1000);
+updateClock();
+
+// ==================== INIT ====================
+load();
+renderAll();
+
+// Close modals on overlay click
+document.querySelectorAll('.modal-overlay').forEach(o => {
+  o.addEventListener('click', e => { if(e.target === o) o.classList.remove('open'); });
+});
 </script>
 </body>
 </html>
